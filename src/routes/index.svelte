@@ -1,2 +1,21 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+    import fetchMock from 'fetch-mock';
+    import Cat from '$components/catForm.svelte'
+    import { apiServerUrl } from '$components/apiServerUrl'
+
+    function serverReturnsError(){
+        fetchMock
+        .mock(apiServerUrl, 500)
+    }
+
+    function serverReturnsSuccess(){
+        fetchMock
+        .mock(apiServerUrl, 200)
+    }
+
+</script>
+    
+<Cat />
+
+<button on:click={serverReturnsError}>I want server to return error</button>
+<button on:click={serverReturnsSuccess}>I want server to return success</button>

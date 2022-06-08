@@ -1,38 +1,84 @@
-# create-svelte
+# svelte-remote-bind
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+### alert: this is beta version
 
-## Creating a project
+Do you want to write some code like?
 
-If you're seeing this, you've probably already done this step. Congrats!
+```js
+//cat.svelte
+<script>
+// const { save, status} = ...
+let item = {name: null, age: null};
 
-```bash
-# create a new project in the current directory
-npm init svelte
+function isValid(item){
+    return ...//
+}
 
-# create a new project in my-app
-npm init svelte my-app
+$: if(isValid(item)) save(item) //it saves to your remote database
+
+</script>
+  
+<form>
+    <div>
+        <input type="text" bind:value={item.name} />
+        <input type="number" bind:value={item.age} />  
+    </div>
+</form>
 ```
 
-## Developing
+I can give you a client (for example a GraphQL Client)
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+and you instantiate like this:
 
-```bash
-npm run dev
+```js
+const put = (values, id, c) => c.request(putQuery, {
+                "input": {
+                  "filter": {"catID": id},
+                  "set": values
+                }
+              })
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+const post = (values, c) => c.request(postQuery, {
+                "input": [
+                  values
+                ]
+              })
+
+const setId = (data) => data.addCat.cat[0].catID
+
+const client = GQClient({apiServerUrl, token: null, put, post, setId})
+
+const { saveImmediately, save, status} = streamFn({client, id: null})
 ```
 
-## Building
+where:
 
-To create a production version of your app:
+```js
+import streamFn, {GQClient} from '$lib/bind'
+import { apiServerUrl } from '$components/apiServerUrl'
 
-```bash
-npm run build
+const postQuery = gql`
+mutation mutadd($input: [AddCatInput!]!) {
+  addCat(input: $input) {
+    numUids
+    cat {
+      catID
+      name
+      age
+    }
+  }
+}
+`
+
+const putQuery = gql`
+mutation mutupdate($input: UpdateCatInput!) {
+  updateCat(input: $input) {
+    cat {
+      age
+      catID
+      name
+    }
+  }
+}
+`
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

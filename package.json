@@ -13,12 +13,20 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
+		"auth0": "^2.42.0",
 		"eslint": "^8.12.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^4.0.0",
+		"felte": "^1.2.2",
+		"fetch-mock": "^9.11.0",
+		"graphql-request": "^4.3.0",
 		"prettier": "^2.5.1",
 		"prettier-plugin-svelte": "^2.5.0",
-		"svelte": "^3.44.0"
+		"svelte": "^3.44.0",
+		"vest": "^4.4.1"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"rxjs": "^7.5.5"
+	}
 }
