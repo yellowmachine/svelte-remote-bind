@@ -82,3 +82,67 @@ mutation mutupdate($input: UpdateCatInput!) {
 }
 `
 ```
+
+This is the core of the package:
+
+```js
+async function handle(x){
+  try{
+      status.set("saving")	
+      const c = client()
+      let response;
+      let values = x.at(-1);
+      if(id){
+        response = await c.put(values, id)
+      }else{
+        response = await c.post(values)
+      }            
+      status.set("saved")	
+      success.timeout("saved!")
+      if(!id){
+        id = c.setId(response);
+      }
+      return response;            
+  } catch(err){
+      console.log('%c error! ', 'background: #222; color: #e62558');
+      console.log(err)
+      status.set("error")
+      error.timeout("error :(")
+      return {error: err}
+  }finally {
+      pauser.next(false)
+  }
+}
+
+//...
+
+const pauser = new Subject()
+const stream = new Subject()
+
+const subscription = stream.pipe(
+  skip(1),
+  debounceTime(T),
+  buffer(pausableInterval(pauser)),
+  switchMap((x) => {
+    if(x.length > 0) return from(handle(x))
+    return NEVER  
+  })
+).subscribe({
+  //...
+});	
+
+//...
+
+function pausableInterval(pauser) {    
+    return pauser.pipe(switchMap((paused) => {
+      if(paused){
+        return NEVER
+      }else{
+        return interval(T)
+      }
+    }
+  )
+)}
+```
+
+In other words, item data is buffered till the stream is busy saving, then when it finish, the last item of the buffer is taken and goes on to be saved.

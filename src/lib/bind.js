@@ -49,7 +49,7 @@ export default function({id, client}){
               response = await c.post(values)
             }            
             status.set("saved")	
-            //success.timeout("Éxito!!!")
+            success.timeout("saved!")
             if(!id){
               id = c.setId(response);
             }
@@ -58,7 +58,7 @@ export default function({id, client}){
             console.log('%c error! ', 'background: #222; color: #e62558');
             console.log(err)
             status.set("error")
-            //error.timeout("Hay un error")
+            error.timeout("error :(")
             return {error: err}
         }finally {
             pauser.next(false)
