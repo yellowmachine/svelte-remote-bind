@@ -7,7 +7,7 @@ Do you want to write some code like?
 ```js
 //cat.svelte
 <script>
-// const { save, status} = ...
+const { save, status} = streamFn({client, id: null})
 let item = {name: null, age: null};
 
 function isValid(item){
