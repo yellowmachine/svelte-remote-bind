@@ -1,4 +1,5 @@
 import adapter from '@sveltejs/adapter-auto';
+import path from 'path'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -7,9 +8,9 @@ const config = {
 		vite: {
 			resolve: {
 				alias: {
-					$src: resolve('./src'),
-					$components: resolve('./src/components'),
-					$lib: resolve('./src/lib')
+					$src: path.resolve('./src'),
+					$components: path.resolve('./src/components'),
+					$lib: path.resolve('./src/lib')
 				}
 			}
 		}

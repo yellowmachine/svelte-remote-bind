@@ -1,14 +1,26 @@
 // jsconfig.json
 {
+	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		"baseUrl": ".",
 		"paths": {
-			"@src": ["src"],
-			"@components": ["src/components"],
-			"@lib": ["src/lib"]
+			"$lib": [
+				"src/lib"
+			],
+			"$lib/*": [
+				"src/lib/*"
+			],
+			"$src": [
+				"src"
+			],
+			"$src/*": [
+				"src/*"
+			],
+			"@components": [
+				"src/components"
+			],
+			"@components/*": [
+				"src/components/*"
+			],
 		}
-	},
-	"include": [
-        "src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte",
-    ]
+	}
 }
