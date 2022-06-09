@@ -1,5 +1,5 @@
 <script>
-import streamFn, {GQClient} from '$lib/bind'
+import {GQClient, stream} from '$lib'
 import { apiServerUrl } from '$components/apiServerUrl'
 import { gql } from 'graphql-request'
 import { create, test, enforce } from 'vest';
@@ -66,7 +66,7 @@ const suite = create((data = {}) => {
 });
  
 //const client = Client({apiServerUrl, token: null})
-const { saveImmediately, save, status} = streamFn({client, id: null})
+const { saveImmediately, save, status} = stream({client, id: null})
 
 let item = {name: null, age: null};
 
