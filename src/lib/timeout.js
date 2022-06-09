@@ -1,7 +1,5 @@
 import { writable } from 'svelte/store';
-import { onDestroy } from 'svelte';
-
-//console.log("import.meta.env.VITE_AUTH0_DOMAIN:", import.meta.env.VITE_AUTH0_DOMAIN)
+//import { onDestroy } from 'svelte';
 
 export default function(t){
   const _a = writable(null)

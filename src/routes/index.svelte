@@ -3,19 +3,23 @@
     import Cat from '$components/catForm.svelte'
     import { apiServerUrl } from '$components/apiServerUrl'
 
+    let serverStatus = 200
+
     function serverReturnsError(){
-        fetchMock
-        .mock(apiServerUrl, 500)
+        serverStatus = 500
+        fetchMock.mock(apiServerUrl, serverStatus)
     }
 
     function serverReturnsSuccess(){
-        fetchMock
-        .mock(apiServerUrl, 200)
+        serverStatus = 200
+        fetchMock.mock(apiServerUrl, serverStatus)
     }
 
 </script>
     
 <Cat />
+
+server status: {serverStatus}
 
 <button on:click={serverReturnsError}>I want server to return error</button>
 <button on:click={serverReturnsSuccess}>I want server to return success</button>
