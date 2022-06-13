@@ -4,19 +4,28 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 export function MockClient({setId}){
     return async function(){
-      return {
+        error = false
+        return {
+          setError: () => error = true,
+          setOk: () => error = false,  
           put: async (values) => {
             await sleep(1000)
-            throw "Error"
+            if(error)
+                throw "Error"
+            else return 'ok'
           },
           post: async (values) => {
             await sleep(1000)
-            return {id: 1}
+            if(error)
+                throw "Error"
+            else return {id: 1}
           },
           setId
       }
     }
   }
+
+export const mockClient = MockClient({setId: (data) => data.id}) 
 
 export function GQClient({apiServerUrl, token, put, post, setId}){
     return async function(){

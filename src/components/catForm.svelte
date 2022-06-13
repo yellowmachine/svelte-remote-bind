@@ -1,5 +1,5 @@
 <script>
-import {GQClient, stream} from '$lib'
+import {mockClient, GQClient, stream} from '$lib'
 import { apiServerUrl } from '$components/apiServerUrl'
 import { gql } from 'graphql-request'
 import { create, test, enforce } from 'vest';
@@ -46,9 +46,8 @@ const post = (values, c) => c.request(postQuery, {
                 ]
               })
 
-const setId = (data) => data.addCat.cat[0].catID
-
-const client = GQClient({apiServerUrl, token: null, put, post, setId})
+//const setId = (data) => data.addCat.cat[0].catID
+//const client = GQClient({apiServerUrl, token: null, put, post, setId})
 
 const suite = create((data = {}) => {
   test('name', 'Username is required', () => {
@@ -65,8 +64,7 @@ const suite = create((data = {}) => {
 
 });
  
-//const client = Client({apiServerUrl, token: null})
-const { saveImmediately, save, status} = stream({client, id: null})
+const { saveImmediately, save, status} = stream({client: mockClient, id: null})
 
 let item = {name: null, age: null};
 

@@ -1,18 +1,18 @@
 <script lang="ts">
-    import fetchMock from 'fetch-mock';
+    import {mockClient} from '$lib'
     import Cat from '$components/catForm.svelte'
-    import { apiServerUrl } from '$components/apiServerUrl'
+    //import { apiServerUrl } from '$components/apiServerUrl'
 
     let serverStatus = 200
 
     function serverReturnsError(){
         serverStatus = 500
-        fetchMock.mock(apiServerUrl, serverStatus)
+        mockClient.setError = true
     }
 
     function serverReturnsSuccess(){
+        mockClient.setError = false
         serverStatus = 200
-        fetchMock.mock(apiServerUrl, serverStatus)
     }
 
 </script>
