@@ -1,4 +1,5 @@
 <script lang="ts">
+    import "../app.css";
     import {mockClient} from '$lib'
     import Cat from '$components/catForm.svelte'
     //import { apiServerUrl } from '$components/apiServerUrl'
