@@ -1,9 +1,24 @@
 import { writable } from 'svelte/store';
 import { buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip } from 'rxjs';
 import { onDestroy } from 'svelte';
-//import {error, success} from '$lib/store';
 
 const T = 2000;
+
+let schemas = {}
+
+export function register(schema){
+  schemas[schema.name] = schema
+}
+
+export function fromSchema(path){
+  const [schemaName, entity] = path.split(":")
+  const schema = schemas[schemaName]
+
+  return {
+    url: schema.baseUrl + schema.entities[entity].path,
+    validation: schema.entities[entity].validation
+  } 
+}
 
 export function stream({id, client}){
 
@@ -33,8 +48,7 @@ export function stream({id, client}){
               response = await c.post(values)
             }            
             status.set("saved")
-            console.log("saved!", 'background: #222; color: #e62558')	
-            //success.timeout("saved!")
+            console.log("%c saved!", 'background: #222; color: #e62558')	
             if(!id){
               id = c.setId(response);
             }
@@ -43,7 +57,6 @@ export function stream({id, client}){
             console.log('%c error! ', 'background: #222; color: #e62558');
             console.log(err)
             status.set("error")
-            //error.timeout("error :(")
             return {error: err}
         }finally {
             pauser.next(false)

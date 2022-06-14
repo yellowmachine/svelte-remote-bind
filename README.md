@@ -1,6 +1,8 @@
 # svelte-remote-bind
 
-### alert: this is beta version
+### alert: this is a draft, there's still no beta npm package
+
+(this is a svelte-kit project, so: npm i && npm run dev)
 
 Do you want to write some code like?
 
@@ -146,3 +148,57 @@ function pausableInterval(pauser) {
 ```
 
 In other words, item data is buffered till the stream is busy saving, then when it finish, the last item of the buffer is taken and goes on to be saved.
+
+### Even better, declarative way: next thing to be implemented
+
+What about having a client, for example a REST client named "endpoint"?
+
+```js
+const { status } = RESTClient({name: 'endpoint', baseUrl: "http://example.com/api"})
+```
+
+And then declare the binding this way:
+
+```js
+<RemoteForm {id} {initialValues} {validation} remoteBind="endpoint:/cat" let:item={item}>
+  ...
+</RemoteForm>
+```
+
+And we could even declare a remote bind for just a field:
+
+```js
+<RemoteField {id} {initialValue} {validation} remoteBind="endpoint:/cat/age />
+```
+
+It could be also a GraphQL Client, just when instantiating the client pass all the needed functions like a post function, a put funcion, etc.
+
+If we create the client with a schema like this:
+
+```js
+schema = {
+  name: "endpoint",
+  baseUrl: "http://example.com/api",
+  entities: {
+    cat: {
+      path: "/cat",
+      validation: (values) => ...
+      setId(data) => data.id
+    }
+  }
+}
+```
+
+then:
+
+```js
+<script>
+register(schema)
+let cat = {name: 'fuffy', age: 1}
+</script>
+
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat}>
+    Name: <input type="text" bind:value={cat.name} />
+    Age: <input type="number" bind:value={cat.age} />
+</RemoteForm>
+```

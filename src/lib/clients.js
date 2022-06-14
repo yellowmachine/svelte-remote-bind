@@ -2,6 +2,28 @@ import { GraphQLClient } from 'graphql-request'
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+export async function RESTClient({token, url}){
+  return {
+      put: async (values, id) => {
+        let headers = {}
+        if(token){
+          t = await token()
+          headers = {Authorization: `Bearer ${t}`}
+        }
+        await fetch(url + `/${id}`, {headers, method: 'PUT', body: JSON.stringify(values)})
+      },
+      post: async (values) => {
+        let headers = {}
+        if(token){
+          t = await token()
+          headers = {Authorization: `Bearer ${t}`}
+        }
+        await fetch(url, {headers, method: 'POST', body: JSON.stringify(values)})
+      },
+      setId
+  }
+}
+
 export function MockClient({setId}){
   let error = false  
   return {
