@@ -7,197 +7,64 @@
 Do you want to write some code like?
 
 ```js
-//cat.svelte
-<script>
-const { save, status} = streamFn({client, id: null})
-let item = {name: null, age: null};
+<script lang="ts">
+    import {register, RemoteForm} from '$lib';
+    import { create, test, enforce } from 'vest';
 
-function isValid(item){
-    return ...//
-}
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-$: if(isValid(item)) save(item) //it saves to your remote database
+    const suite = create((data = {}) => {
+        test('name', 'Name is required', () => {
+            enforce(data.name).isNotBlank();
+        });
+
+        test('age', 'Age is required', () => {
+            enforce(data.name).isNotBlank();
+        });
+
+        test('age', 'Age is a number', () => {
+            enforce(data.name).isNumeric();
+        });
+
+    });
+
+    ...
+
+    let schema = {
+        fetch: async ({url, headers, method, body}) => {
+            await sleep(2000)
+            if(returnCode === 400)
+                throw "Error"
+            else 
+                return {id: 1}
+        },
+        name: "endpoint",
+        baseUrl: "http://localhost/api",
+        entities: {
+            cat: {
+                path: "/cat",
+                validation: (data) => suite(data).isValid(),
+                key: "id"
+            }
+        }
+    }
+
+    register(schema)
+    let cat = {name: 'fuffy', age: 1}
 
 </script>
-  
-<form>
-    <div>
-        <input type="text" bind:value={item.name} />
-        <input type="number" bind:value={item.age} />  
-    </div>
-</form>
-```
 
-I can give you a client (for example a GraphQL Client)
-
-and you instantiate like this:
-
-```js
-const put = (values, id, c) => c.request(putQuery, {
-                "input": {
-                  "filter": {"catID": id},
-                  "set": values
-                }
-              })
-
-const post = (values, c) => c.request(postQuery, {
-                "input": [
-                  values
-                ]
-              })
-
-const key = (data) => data.addCat.cat[0].catID
-
-const client = GQClient({apiServerUrl, token: null, put, post, key})
-
-const { saveImmediately, save, status} = streamFn({client, id: null})
-```
-
-where:
-
-```js
-import streamFn, {GQClient} from '$lib/bind'
-import { apiServerUrl } from '$components/apiServerUrl'
-
-const postQuery = gql`
-mutation mutadd($input: [AddCatInput!]!) {
-  addCat(input: $input) {
-    numUids
-    cat {
-      catID
-      name
-      age
-    }
-  }
-}
-`
-
-const putQuery = gql`
-mutation mutupdate($input: UpdateCatInput!) {
-  updateCat(input: $input) {
-    cat {
-      age
-      catID
-      name
-    }
-  }
-}
-`
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat}>
+    Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
+    Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
+</RemoteForm>
 ```
 
 This is the core of the package:
 
 ```js
 async function handle(x){
-  try{
-      status.set("saving")	
-      const c = client()
-      let response;
-      let values = x.at(-1);
-      if(id){
-        response = await c.put(values, id)
-      }else{
-        response = await c.post(values)
-      }            
-      status.set("saved")	
-      success.timeout("saved!")
-      if(!id){
-        id = response[c.key]
-      }
-      return response;            
-  } catch(err){
-      console.log('%c error! ', 'background: #222; color: #e62558');
-      console.log(err)
-      status.set("error")
-      error.timeout("error :(")
-      return {error: err}
-  }finally {
-      pauser.next(false)
-  }
-}
 
-//...
-
-const pauser = new Subject()
-const stream = new Subject()
-
-const subscription = stream.pipe(
-  skip(1),
-  debounceTime(T),
-  buffer(pausableInterval(pauser)),
-  switchMap((x) => {
-    if(x.length > 0) return from(handle(x))
-    return NEVER  
-  })
-).subscribe({
-  //...
-});	
-
-//...
-
-function pausableInterval(pauser) {    
-    return pauser.pipe(switchMap((paused) => {
-      if(paused){
-        return NEVER
-      }else{
-        return interval(T)
-      }
-    }
-  )
-)}
 ```
 
 In other words, item data is buffered till the stream is busy saving, then when it finish, the last item of the buffer is taken and goes on to be saved.
-
-### Even better, declarative way: next thing to be implemented
-
-What about having a client, for example a REST client named "endpoint"?
-
-```js
-const { status } = RESTClient({name: 'endpoint', baseUrl: "http://example.com/api"})
-```
-
-And then declare the binding this way:
-
-```js
-<RemoteForm {id} {initialValues} {validation} remoteBind="endpoint:/cat" let:item={item}>
-  ...
-</RemoteForm>
-```
-
-And we could even declare a remote bind for just a field:
-
-```js
-<RemoteField {id} {initialValue} {validation} remoteBind="endpoint:/cat/age />
-```
-
-It could be also a GraphQL Client, just when instantiating the client pass all the needed functions like a post function, a put funcion, etc.
-
-If we create the client with a schema like this:
-
-```js
-schema = {
-  name: "endpoint",
-  baseUrl: "http://example.com/api",
-  entities: {
-    cat: {
-      path: "/cat",
-      validation: (values) => ...
-    }
-  }
-}
-```
-
-then:
-
-```js
-<script>
-register(schema)
-let cat = {name: 'fuffy', age: 1}
-</script>
-
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat}>
-    Name: <input type="text" bind:value={cat.name} />
-    Age: <input type="number" bind:value={cat.age} />
-</RemoteForm>
-```

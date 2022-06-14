@@ -1,7 +1,23 @@
 <script lang="ts">
     import {register, RemoteForm} from '$lib';
+    import { create, test, enforce } from 'vest';
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    const suite = create((data = {}) => {
+        test('name', 'Username is required', () => {
+            enforce(data.name).isNotBlank();
+        });
+
+        test('age', 'Age is required', () => {
+            enforce(data.name).isNotBlank();
+        });
+
+        test('age', 'Age is a number', () => {
+            enforce(data.name).isNumeric();
+        });
+
+    });
 
     let returnCode = 200;
     
@@ -14,7 +30,7 @@
     }
 
     let schema = {
-        fetch: async () => {
+        fetch: async ({url, headers, method, body}) => {
             await sleep(2000)
             if(returnCode === 400)
                 throw "Error"
@@ -26,7 +42,7 @@
         entities: {
             cat: {
                 path: "/cat",
-                validation: () => true,
+                validation: (data) => suite(data).isValid(),
                 key: "id"
             }
         }
