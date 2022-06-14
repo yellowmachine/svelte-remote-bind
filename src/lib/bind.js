@@ -15,7 +15,8 @@ export function fromSchema(path){
   const schema = schemas[schemaName]
 
   return {
-    setId: schema.entities[entity].setId,
+    myfetch: schema.entities[entity].fetch,
+    key: schema.entities[entity].key,
     url: schema.baseUrl + schema.entities[entity].path,
     validation: schema.entities[entity].validation
   } 
@@ -53,7 +54,7 @@ export function stream({id, client}){
             status.set("saved")
             console.log("%c saved!", 'background: #222; color: #e62558')	
             if(!id){
-              id = c.setId(response);
+              id = response[c.key]
             }
             return response;            
         } catch(err){

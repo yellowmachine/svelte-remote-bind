@@ -46,9 +46,9 @@ const post = (values, c) => c.request(postQuery, {
                 ]
               })
 
-const setId = (data) => data.addCat.cat[0].catID
+const key = (data) => data.addCat.cat[0].catID
 
-const client = GQClient({apiServerUrl, token: null, put, post, setId})
+const client = GQClient({apiServerUrl, token: null, put, post, key})
 
 const { saveImmediately, save, status} = streamFn({client, id: null})
 ```
@@ -102,7 +102,7 @@ async function handle(x){
       status.set("saved")	
       success.timeout("saved!")
       if(!id){
-        id = c.setId(response);
+        id = response[c.key]
       }
       return response;            
   } catch(err){
@@ -183,7 +183,6 @@ schema = {
     cat: {
       path: "/cat",
       validation: (values) => ...
-      setId(data) => data.id
     }
   }
 }

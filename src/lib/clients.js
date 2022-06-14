@@ -2,41 +2,7 @@ import { GraphQLClient } from 'graphql-request'
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-export function RESTClientMocked({token, url, setId}){
-  let error = false;
-
-  return {
-      setError: () => error = true,
-      setOk: () => error = false,  
-      put: async (values, id) => {
-        let headers = {}
-        if(token){
-          t = await token()
-          headers = {Authorization: `Bearer ${t}`}
-        }
-        await sleep(1000)
-        if(error)
-          throw "Error"
-        else 
-          return 'ok'
-      },
-      post: async (values) => {
-        let headers = {}
-        if(token){
-          t = await token()
-          headers = {Authorization: `Bearer ${t}`}
-        }
-        await sleep(1000)
-        if(error)
-          throw "Error"
-        else 
-          return {id: 1}
-      },
-      setId
-  }
-}
-
-export function RESTClient({token, url, setId}){
+export function RESTClient({token, url, key, myfetch}){
   return {
       put: async (values, id) => {
         let headers = {}
@@ -44,7 +10,10 @@ export function RESTClient({token, url, setId}){
           t = await token()
           headers = {Authorization: `Bearer ${t}`}
         }
-        await fetch(url + `/${id}`, {headers, method: 'PUT', body: JSON.stringify(values)})
+        if(myfetch)
+          await myfetch({url, headers, method: 'PUT', body: JSON.stringify(values)})
+        else 
+          await fetch(url + `/${id}`, {headers, method: 'PUT', body: JSON.stringify(values)})
       },
       post: async (values) => {
         let headers = {}
@@ -52,36 +21,16 @@ export function RESTClient({token, url, setId}){
           t = await token()
           headers = {Authorization: `Bearer ${t}`}
         }
-        await fetch(url, {headers, method: 'POST', body: JSON.stringify(values)})
+        if(myfetch)
+          await myfetch({url, headers, method: 'POST', body: JSON.stringify(values)})
+        else
+          await fetch(url, {headers, method: 'POST', body: JSON.stringify(values)})
       },
-      setId
+      key
   }
 }
-
-export function MockClient({setId}){
-  let error = false  
-  return {
-    setError: () => error = true,
-    setOk: () => error = false,  
-    put: async (values) => {
-      await sleep(1000)
-      if(error)
-          throw "Error"
-      else return 'ok'
-    },
-    post: async (values) => {
-      await sleep(1000)
-      if(error)
-          throw "Error"
-      else return {id: 1}
-    },
-    setId
-  }
-}
-
-export const mockClient = MockClient({setId: (data) => data.id}) 
-
-export async function GQClient({apiServerUrl, token, put, post, setId}){
+ 
+export async function GQClient({apiServerUrl, token, put, post, key}){
   if(token){
     const t = await token();
     let c = new GraphQLClient(apiServerUrl, { headers: {Authorization: `Bearer ${t}`} })
@@ -91,6 +40,6 @@ export async function GQClient({apiServerUrl, token, put, post, setId}){
   return {
       put: async (values, id) => await put(values, id, c),
       post: async (values) => await post(values, c),
-      setId
+      key
   }
 }
