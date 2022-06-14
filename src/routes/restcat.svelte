@@ -10,7 +10,7 @@
     }
 
     function setError(){
-        returnCode = 400:
+        returnCode = 400;
     }
 
     let schema = {
