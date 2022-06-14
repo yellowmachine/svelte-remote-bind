@@ -7,11 +7,11 @@
 
     function serverReturnsError(){
         serverStatus = 500
-        mockClient.setError = true
+        mockClient.setError()
     }
 
     function serverReturnsSuccess(){
-        mockClient.setError = false
+        mockClient.setOk()
         serverStatus = 200
     }
 
@@ -21,5 +21,5 @@
 
 server status: {serverStatus}
 
-<button on:click={serverReturnsError}>I want server to return error</button>
-<button on:click={serverReturnsSuccess}>I want server to return success</button>
+<button class="btn" on:click={serverReturnsError}>I want server to return error</button>
+<button class="btn" on:click={serverReturnsSuccess}>I want server to return success</button>

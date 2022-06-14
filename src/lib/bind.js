@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip } from 'rxjs';
 import { onDestroy } from 'svelte';
-import {error, success} from '$lib/store';
+//import {error, success} from '$lib/store';
 
 const T = 2000;
 
@@ -23,6 +23,7 @@ export function stream({id, client}){
     async function handle(x){
         try{
             status.set("saving")	
+            console.log('saving...')
             const c = client()
             let response;
             let values = x.at(-1);
@@ -31,8 +32,9 @@ export function stream({id, client}){
             }else{
               response = await c.post(values)
             }            
-            status.set("saved")	
-            success.timeout("saved!")
+            status.set("saved")
+            console.log("saved!", 'background: #222; color: #e62558')	
+            //success.timeout("saved!")
             if(!id){
               id = c.setId(response);
             }
@@ -41,7 +43,7 @@ export function stream({id, client}){
             console.log('%c error! ', 'background: #222; color: #e62558');
             console.log(err)
             status.set("error")
-            error.timeout("error :(")
+            //error.timeout("error :(")
             return {error: err}
         }finally {
             pauser.next(false)
@@ -57,7 +59,7 @@ export function stream({id, client}){
       buffer(pausableInterval(pauser)),
       switchMap((x) => {
         if(x.length > 0) return from(handle(x))
-        //console.log('skiping')
+        console.log('skiping')
         return NEVER  
       })
     ).subscribe({
