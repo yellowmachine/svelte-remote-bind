@@ -1,6 +1,6 @@
 <script>
 import {mockClient, GQClient, stream} from '$lib'
-import {error, success} from './store'
+//import {error, success} from './store'
 import { apiServerUrl } from '$components/apiServerUrl'
 import { gql } from 'graphql-request'
 import { create, test, enforce } from 'vest';
@@ -74,8 +74,8 @@ function isValid(item){
 }
 
 $: if(isValid(item)) save(item)
-$: if(status === 'error') error.timeout("Error saving data :(")
-$: if(status === 'saved') success.timeout("Data saved!")
+//$: if(status === 'error') error.timeout("Error saving data :(")
+//$: if(status === 'saved') success.timeout("Data saved!")
 
 </script>
   

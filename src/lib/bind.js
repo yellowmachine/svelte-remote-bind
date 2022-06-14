@@ -15,12 +15,15 @@ export function fromSchema(path){
   const schema = schemas[schemaName]
 
   return {
+    setId: schema.entities[entity].setId,
     url: schema.baseUrl + schema.entities[entity].path,
     validation: schema.entities[entity].validation
   } 
 }
 
 export function stream({id, client}){
+
+    console.log(id, 'client', client)
 
     const status = writable('initial')
         
@@ -39,7 +42,7 @@ export function stream({id, client}){
         try{
             status.set("saving")	
             console.log('saving...')
-            const c = client()
+            const c = client
             let response;
             let values = x.at(-1);
             if(id){

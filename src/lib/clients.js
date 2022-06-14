@@ -2,7 +2,41 @@ import { GraphQLClient } from 'graphql-request'
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-export async function RESTClient({token, url}){
+export function RESTClientMocked({token, url, setId}){
+  let error = false;
+
+  return {
+      setError: () => error = true,
+      setOk: () => error = false,  
+      put: async (values, id) => {
+        let headers = {}
+        if(token){
+          t = await token()
+          headers = {Authorization: `Bearer ${t}`}
+        }
+        await sleep(1000)
+        if(error)
+          throw "Error"
+        else 
+          return 'ok'
+      },
+      post: async (values) => {
+        let headers = {}
+        if(token){
+          t = await token()
+          headers = {Authorization: `Bearer ${t}`}
+        }
+        await sleep(1000)
+        if(error)
+          throw "Error"
+        else 
+          return {id: 1}
+      },
+      setId
+  }
+}
+
+export function RESTClient({token, url, setId}){
   return {
       put: async (values, id) => {
         let headers = {}
