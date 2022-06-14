@@ -18,13 +18,12 @@ export function fromSchema(path){
     myfetch: schema.entities[entity].fetch,
     key: schema.entities[entity].key,
     url: schema.baseUrl + schema.entities[entity].path,
-    validation: schema.entities[entity].validation
+    validation: schema.entities[entity].validation,
+    errors: schema.entities[entity].errors
   } 
 }
 
 export function stream({id, client}){
-
-    console.log(id, 'client', client)
 
     const status = writable('initial')
         
@@ -39,27 +38,24 @@ export function stream({id, client}){
       )
     )}
     
-    async function handle(x){
+    async function handle(values){
         try{
             status.set("saving")	
             console.log('saving...')
-            const c = client
             let response;
-            let values = x.at(-1);
             if(id){
-              response = await c.put(values, id)
+              response = await client.put(values, id)
             }else{
-              response = await c.post(values)
+              response = await client.post(values)
             }            
             status.set("saved")
-            console.log("%c saved!", 'background: #222; color: #e62558')	
+            console.log("saved!")	
             if(!id){
-              id = response[c.key]
+              id = response[client.key]
             }
             return response;            
         } catch(err){
-            console.log('%c error! ', 'background: #222; color: #e62558');
-            console.log(err)
+            console.log('error!', err);
             status.set("error")
             return {error: err}
         }finally {
@@ -75,12 +71,11 @@ export function stream({id, client}){
       debounceTime(T),
       buffer(pausableInterval(pauser)),
       switchMap((x) => {
-        if(x.length > 0) return from(handle(x))
-        console.log('skiping')
+        if(x.length > 0) return from(handle(x.at(-1)))
         return NEVER  
       })
     ).subscribe({
-      next: (v) => {}, //console.log(`observer: ${JSON.stringify(v)}`),
+      next: (v) => {},
       complete: (v) => console.log('complete'),
       error: (err) => console.log(err)
     });	

@@ -1,49 +1,83 @@
 <script lang="ts">
     import "../app.css";
-    /*import {error, success} from './store'
-    import {mockClient} from '$lib'
-    import Cat from '$components/catForm.svelte'
 
-    let serverStatus = 200
-    mockClient.setOk()
+    import {register, RemoteForm} from '$lib';
+    import { create, test, enforce } from 'vest';
 
-    function serverReturnsError(){
-        serverStatus = 500
-        mockClient.setError()
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    const suite = create((data = {}) => {
+        test('name', 'Name is required', () => {
+            enforce(data.name).isNotBlank();
+        });
+
+        test('age', 'Age is required', () => {
+            enforce(data.name).isNotBlank();
+        });
+
+        test('age', 'Age is a number', () => {
+            enforce(data.name).isNumeric();
+        });
+
+    });
+
+    let returnCode = 200;
+    
+    function setOk(){
+        returnCode = 200;
     }
 
-    function serverReturnsSuccess(){
-        serverStatus = 200
-        mockClient.setOk()
+    function setError(){
+        returnCode = 400;
     }
-    */
+
+    let schema = {
+        fetch: async ({url, headers, method, body}) => {
+            await sleep(2000)
+            if(returnCode === 400)
+                throw "Error"
+            else 
+                return {id: 1}
+        },
+        name: "endpoint",
+        baseUrl: "http://localhost/api",
+        entities: {
+            cat: {
+                path: "/cat",
+                validation: (data) => suite(data).isValid(),
+                errors: (data) => suite(data),
+                key: "id"
+            }
+        }
+    }
+
+    register(schema)
+    let cat = {name: 'fuffy', age: 1 } //, _status: null, _errors: {}
 
 </script>
-    
-<a class="link" href="/restcat">Go to REST example</a>
-<p />
-<h1 class="text-xl">GraphQL example ... pending</h1>
 
-<!--
-<Cat />
+<div>It's my cat ;)</div>
+
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:status let:verrors>
+    Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
+    Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
+    Status: {status}
+    Errors: {JSON.stringify(verrors)}
+</RemoteForm>
 
 <div>
-    <div class={serverStatus === 200 ? 'success': 'failed'}>server status: {serverStatus}</div>
-    <button class="btn btn-error" on:click={serverReturnsError}>I want server to return error</button>
-    <button class="btn btn-success" on:click={serverReturnsSuccess}>I want server to return success</button>    
+    <div class={returnCode === 200 ? 'success': 'failed'}>return code: {returnCode}</div>
+    <button class="btn btn-error" on:click={setError}>I want server to return error</button>
+    <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
 </div>
 
-<div class="alert alert-error shadow-lg">
-    <div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <span>{error.msg}</span>
-    </div>
-</div>
+<style>
+    .success{
+        color: green;
+    }
 
-<div class="alert alert-success shadow-lg">
-    <div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <span>{success.msg}</span>
-    </div>
-</div>
--->
+    .failed{
+        color: red;
+    }
+
+</style>
