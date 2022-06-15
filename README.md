@@ -1,148 +1,59 @@
 # svelte-remote-bind
 
-### alert: this is beta version
+### alert: this is a draft, there's still no beta npm package
+
+(this is a svelte-kit project, so: npm i && npm run dev)
+
+[Demo] (https://svelte-remote-bind.surge.sh)
 
 Do you want to write some code like?
 
 ```js
-//cat.svelte
-<script>
-const { save, status} = streamFn({client, id: null})
-let item = {name: null, age: null};
+<script lang="ts">
 
-function isValid(item){
-    return ...//
-}
+    import {register, RemoteForm} from '$lib';
+    import { create, test, enforce } from 'vest';
 
-$: if(isValid(item)) save(item) //it saves to your remote database
+    const suite = create((data = {}) => {
+        test('name', 'Name is required', () => {
+            enforce(data.name).isNotBlank();
+        });
+
+        test('age', 'Age is required', () => {
+            enforce(data.age).isNotBlank();
+        });
+
+        test('age', 'Age is a number', () => {
+            enforce(data.age).isNumeric();
+        });
+
+    });
+
+    let schema = {
+        //fetch: async ({url, headers, method, body}) => , //you can overwrite default fetch
+        name: "endpoint",
+        baseUrl: "http://localhost/api",
+        entities: {
+            cat: {
+                path: "/cat",
+                validation: (data) => suite(data).isValid(),
+                errors: (data) => suite(data),
+                key: "id"
+            }
+        }
+    }
+
+    register(schema)
+    let cat = {name: 'fuffy', age: 1 } 
 
 </script>
-  
-<form>
-    <div>
-        <input type="text" bind:value={item.name} />
-        <input type="number" bind:value={item.age} />  
-    </div>
-</form>
+
+<div>It's my cat ;)</div>
+
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:status let:verrors>
+    Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
+    Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
+    <div class={`${status}`}>Status: {status}</div>
+    <div>Errors: {JSON.stringify(verrors.tests)}</div>
+</RemoteForm>
 ```
-
-I can give you a client (for example a GraphQL Client)
-
-and you instantiate like this:
-
-```js
-const put = (values, id, c) => c.request(putQuery, {
-                "input": {
-                  "filter": {"catID": id},
-                  "set": values
-                }
-              })
-
-const post = (values, c) => c.request(postQuery, {
-                "input": [
-                  values
-                ]
-              })
-
-const setId = (data) => data.addCat.cat[0].catID
-
-const client = GQClient({apiServerUrl, token: null, put, post, setId})
-
-const { saveImmediately, save, status} = streamFn({client, id: null})
-```
-
-where:
-
-```js
-import streamFn, {GQClient} from '$lib/bind'
-import { apiServerUrl } from '$components/apiServerUrl'
-
-const postQuery = gql`
-mutation mutadd($input: [AddCatInput!]!) {
-  addCat(input: $input) {
-    numUids
-    cat {
-      catID
-      name
-      age
-    }
-  }
-}
-`
-
-const putQuery = gql`
-mutation mutupdate($input: UpdateCatInput!) {
-  updateCat(input: $input) {
-    cat {
-      age
-      catID
-      name
-    }
-  }
-}
-`
-```
-
-This is the core of the package:
-
-```js
-async function handle(x){
-  try{
-      status.set("saving")	
-      const c = client()
-      let response;
-      let values = x.at(-1);
-      if(id){
-        response = await c.put(values, id)
-      }else{
-        response = await c.post(values)
-      }            
-      status.set("saved")	
-      success.timeout("saved!")
-      if(!id){
-        id = c.setId(response);
-      }
-      return response;            
-  } catch(err){
-      console.log('%c error! ', 'background: #222; color: #e62558');
-      console.log(err)
-      status.set("error")
-      error.timeout("error :(")
-      return {error: err}
-  }finally {
-      pauser.next(false)
-  }
-}
-
-//...
-
-const pauser = new Subject()
-const stream = new Subject()
-
-const subscription = stream.pipe(
-  skip(1),
-  debounceTime(T),
-  buffer(pausableInterval(pauser)),
-  switchMap((x) => {
-    if(x.length > 0) return from(handle(x))
-    return NEVER  
-  })
-).subscribe({
-  //...
-});	
-
-//...
-
-function pausableInterval(pauser) {    
-    return pauser.pipe(switchMap((paused) => {
-      if(paused){
-        return NEVER
-      }else{
-        return interval(T)
-      }
-    }
-  )
-)}
-```
-
-In other words, item data is buffered till the stream is busy saving, then when it finish, the last item of the buffer is taken and goes on to be saved.

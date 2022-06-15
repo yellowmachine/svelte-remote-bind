@@ -1,28 +1,29 @@
 import { writable } from 'svelte/store';
 import { buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip } from 'rxjs';
 import { onDestroy } from 'svelte';
-import { GraphQLClient } from 'graphql-request'
-import {error, success} from '$lib/store';
 
 const T = 2000;
 
-export function GQClient({apiServerUrl, token, put, post, setId}){
-  return async function(){
-    if(token){
-      const t = await token();
-      let c = new GraphQLClient(apiServerUrl, { headers: {Authorization: `Bearer ${t}`} })
-    }else{
-      let c = new GraphQLClient(apiServerUrl)
-    }
-    return {
-        put: (values, id) => put(values, id, c),
-        post: (values, c) => post(values, c),
-        setId
-    }
-  }
+let schemas = {}
+
+export function register(schema){
+  schemas[schema.name] = schema
 }
 
-export default function({id, client}){
+export function fromSchema(path){
+  const [schemaName, entity] = path.split(":")
+  const schema = schemas[schemaName]
+
+  return {
+    myfetch: schema.fetch,
+    key: schema.entities[entity].key,
+    url: schema.baseUrl + schema.entities[entity].path,
+    validation: schema.entities[entity].validation,
+    errors: schema.entities[entity].errors
+  } 
+}
+
+export function stream({id, client}){
 
     const status = writable('initial')
         
@@ -37,28 +38,25 @@ export default function({id, client}){
       )
     )}
     
-    async function handle(x){
+    async function handle(values){
         try{
             status.set("saving")	
-            const c = client()
+            console.log('saving...')
             let response;
-            let values = x.at(-1);
             if(id){
-              response = await c.put(values, id)
+              response = await client.put(values, id)
             }else{
-              response = await c.post(values)
+              response = await client.post(values)
             }            
-            status.set("saved")	
-            success.timeout("saved!")
+            status.set("saved")
+            console.log("saved!")	
             if(!id){
-              id = c.setId(response);
+              id = response[client.key]
             }
             return response;            
         } catch(err){
-            console.log('%c error! ', 'background: #222; color: #e62558');
-            console.log(err)
+            console.log('error!', err);
             status.set("error")
-            error.timeout("error :(")
             return {error: err}
         }finally {
             pauser.next(false)
@@ -73,12 +71,12 @@ export default function({id, client}){
       debounceTime(T),
       buffer(pausableInterval(pauser)),
       switchMap((x) => {
-        if(x.length > 0) return from(handle(x))
-        //console.log('skiping')
+        console.log("switchmap x", x, x.length)
+        if(x.length > 0) return from(handle(x.at(-1)))
         return NEVER  
       })
     ).subscribe({
-      next: (v) => {}, //console.log(`observer: ${JSON.stringify(v)}`),
+      next: (v) => {},
       complete: (v) => console.log('complete'),
       error: (err) => console.log(err)
     });	
