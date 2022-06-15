@@ -52,7 +52,7 @@
     }
 
     register(schema)
-    let cat = {name: 'fuffy', age: 1 } //, _status: null, _errors: {}
+    let cat = {name: 'fuffy', age: 1 } 
 
 </script>
 
