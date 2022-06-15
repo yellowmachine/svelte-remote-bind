@@ -12,11 +12,11 @@
         });
 
         test('age', 'Age is required', () => {
-            enforce(data.name).isNotBlank();
+            enforce(data.age).isNotBlank();
         });
 
         test('age', 'Age is a number', () => {
-            enforce(data.name).isNumeric();
+            enforce(data.age).isNumeric();
         });
 
     });
@@ -61,8 +61,8 @@
 <RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:status let:verrors>
     Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
     Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    Status: {status}
-    Errors: {JSON.stringify(verrors)}
+    <div class={`${status}`}>Status: {status}</div>
+    <div>Errors: {JSON.stringify(verrors.tests)}</div>
 </RemoteForm>
 
 <div>
@@ -78,6 +78,22 @@
 
     .failed{
         color: red;
+    }
+
+    .initial{
+        color: gray;
+    }
+
+    .saving{
+        color: orange;
+    }
+
+    .error{
+        color: red;
+    }
+
+    .saved{
+        color: green;
     }
 
 </style>

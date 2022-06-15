@@ -11,9 +11,9 @@ export function RESTClient({token, url, key, myfetch}){
           headers = {Authorization: `Bearer ${t}`}
         }
         if(myfetch)
-          await myfetch({url, headers, method: 'PUT', body: JSON.stringify(values)})
+          return await myfetch({url, headers, method: 'PUT', body: JSON.stringify(values)})
         else 
-          await fetch(url + `/${id}`, {headers, method: 'PUT', body: JSON.stringify(values)})
+          return await fetch(url + `/${id}`, {headers, method: 'PUT', body: JSON.stringify(values)})
       },
       post: async (values) => {
         let headers = {}
@@ -22,9 +22,9 @@ export function RESTClient({token, url, key, myfetch}){
           headers = {Authorization: `Bearer ${t}`}
         }
         if(myfetch)
-          await myfetch({url, headers, method: 'POST', body: JSON.stringify(values)})
+          return await myfetch({url, headers, method: 'POST', body: JSON.stringify(values)})
         else
-          await fetch(url, {headers, method: 'POST', body: JSON.stringify(values)})
+          return await fetch(url, {headers, method: 'POST', body: JSON.stringify(values)})
       },
       key
   }

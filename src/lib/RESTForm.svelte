@@ -11,19 +11,10 @@ const { save, status} = stream({client, id})
 
 export let item;
 
-$: if(validation(item)) save(id, item)
-$: {
-    item._status = $status
-    item = item
-}
-/*
-$: {
-    item._verrors = errors(item)
-    item = item
-}
-*/
+$: if(validation(item)) save(item) //id, item
+
 </script>
 
 <form>
-    <slot {status} verrors={errors(item)} />
+    <slot status={$status} verrors={errors(item)} />
 </form>

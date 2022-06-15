@@ -15,7 +15,7 @@ export function fromSchema(path){
   const schema = schemas[schemaName]
 
   return {
-    myfetch: schema.entities[entity].fetch,
+    myfetch: schema.fetch,
     key: schema.entities[entity].key,
     url: schema.baseUrl + schema.entities[entity].path,
     validation: schema.entities[entity].validation,
@@ -71,6 +71,7 @@ export function stream({id, client}){
       debounceTime(T),
       buffer(pausableInterval(pauser)),
       switchMap((x) => {
+        console.log("switchmap x", x, x.length)
         if(x.length > 0) return from(handle(x.at(-1)))
         return NEVER  
       })
