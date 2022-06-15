@@ -4,7 +4,7 @@
 
 (this is a svelte-kit project, so: npm i && npm run dev)
 
-[Demo] (https://svelte-remote-bind.surge.sh)
+[Demo](https://svelte-remote-bind.surge.sh)
 
 Do you want to write some code like?
 
