@@ -1,5 +1,6 @@
 <script>
-import {RESTClient, stream, fromSchema} from '$lib'
+import {RESTClient} from './clients';
+import {stream, fromSchema} from './bind';
 
 export let id = null;
 export let remoteBind;
