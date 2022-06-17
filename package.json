@@ -2,11 +2,14 @@
 	"name": "svelte-remote-bind",
 	"version": "0.0.1",
 	"scripts": {
+		"test": "vitest",
+    	"coverage": "vitest run --coverage",
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
 		"package": "svelte-kit package",
 		"preview": "svelte-kit preview",
 		"prepare": "svelte-kit sync",
+		"deploy": "surge ./build https://svelte-remote-bind.surge.sh",
 		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
 		"format": "prettier --write --plugin-search-dir=. ."
 	},
@@ -30,7 +33,9 @@
 		"svelte-preprocess": "^4.10.7",
 		"svelte2tsx": "^0.5.10",
 		"tailwindcss": "^3.1.2",
-		"vest": "^4.4.1"
+		"vest": "^4.4.1",
+		"vi-fetch": "^0.7.1",
+		"vitest": "^0.15.1"
 	},
 	"type": "module",
 	"dependencies": {
