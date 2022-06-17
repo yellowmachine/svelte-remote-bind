@@ -1,4 +1,4 @@
-import { GraphQLClient } from 'graphql-request'
+//import { GraphQLClient } from 'graphql-request'
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -30,6 +30,7 @@ export function RESTClient({token, url, key, myfetch}){
   }
 }
  
+/*
 export async function GQClient({apiServerUrl, token, put, post, key}){
   if(token){
     const t = await token();
@@ -43,3 +44,4 @@ export async function GQClient({apiServerUrl, token, put, post, key}){
       key
   }
 }
+*/
