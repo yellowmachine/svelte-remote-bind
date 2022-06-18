@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip, tap } from 'rxjs';
+import { pipe, buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip, tap } from 'rxjs';
 import { onDestroy } from 'svelte';
 
 const T = 2000;
@@ -26,7 +26,7 @@ export function fromSchema(path){
 }
 
 export function stream({id, client, delay=T}){
-    console.log('********************** delay', delay)
+    
     const status = writable('initial')
         
     function pausableInterval(pauser) {    
@@ -34,7 +34,7 @@ export function stream({id, client, delay=T}){
           if(paused){
             return NEVER
           }else{
-            return interval(delay) //T
+            return interval(delay)
           }
         }
       )
@@ -43,7 +43,7 @@ export function stream({id, client, delay=T}){
     async function handle(values){
         try{
             status.set("saving")	
-            console.log('saving...')
+            //console.log('saving...')
             let response;
             if(id){
               response = await client.put(values, id)
@@ -51,7 +51,7 @@ export function stream({id, client, delay=T}){
               response = await client.post(values)
             }            
             status.set("saved")
-            console.log("saved!")	
+            //console.log("saved!")	
             if(!id){
               id = response[client.key]
             }
@@ -68,28 +68,33 @@ export function stream({id, client, delay=T}){
     const pauser = new Subject()
     const stream = new Subject()
     
-    const subscription = stream.pipe(
-      tap(()=>console.log("tap 1")),
+    const _pipe = pipe(
       skip(1),
-      tap(()=>console.log("tap 2")),
+      tap(x=>console.log(1, x)),
       debounceTime(delay),
-      tap(()=>console.log("tap 3")),
+      tap(x=>console.log(2, x)),
       buffer(pausableInterval(pauser)),
+      tap(x=>console.log(3, x)),
       switchMap((x) => {
-        //console.log("switchmap x", x, x.length)
         if(x.length > 0) return from(handle(x.at(-1)))
         return NEVER  
-      })
+      }),
+      tap(x=>console.log(4, x)),
+    ); 
+
+    const subscription = stream.pipe(
+      _pipe
     ).subscribe({
       next: (v) => {},
       complete: (v) => console.log('complete'),
       error: (err) => console.log(err)
     });	
 
-    onDestroy(() => subscription.unsubscribe());
+    //onDestroy(() => subscription.unsubscribe());
     pauser.next(false)
 
     return {
+        pipe: _pipe,
         status,
         save: (item) => stream.next(item),
         saveImmediately: (x) => handle([x])
