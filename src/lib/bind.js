@@ -15,6 +15,7 @@ export function fromSchema(path){
   const schema = schemas[schemaName]
 
   return {
+    delay: schema.delay,
     myfetch: schema.fetch,
     token: schema.token,
     key: schema.entities[entity].key,
@@ -24,7 +25,7 @@ export function fromSchema(path){
   } 
 }
 
-export function stream({id, client}){
+export function stream({id, client, delay=T}){
 
     const status = writable('initial')
         
@@ -33,7 +34,7 @@ export function stream({id, client}){
           if(paused){
             return NEVER
           }else{
-            return interval(T)
+            return interval(delay) //T
           }
         }
       )

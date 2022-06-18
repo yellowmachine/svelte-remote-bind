@@ -32,7 +32,6 @@
     }
 
     let schema = {
-        /*
         fetch: async ({url, headers, method, body}) => {
             await sleep(2000)
             if(returnCode === 400)
@@ -40,10 +39,10 @@
             else 
                 return {id: 1}
         },
-        */
-        token: async () => "ABC",
+        delay: 1000,
+        token: async () => "Bearer ABC",
         name: "endpoint",
-        baseUrl: "http://localhost/api:8080",
+        baseUrl: "http://localhost:8080/api",
         entities: {
             cat: {
                 path: "/cat",
