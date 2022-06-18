@@ -3,11 +3,12 @@
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 export function RESTClient({token, url, key, myfetch}){
+  
   return {
       put: async (values, id) => {
         let headers = {}
         if(token){
-          t = await token()
+          const t = await token()
           headers = {Authorization: `Bearer ${t}`}
         }
         if(myfetch)
@@ -18,7 +19,7 @@ export function RESTClient({token, url, key, myfetch}){
       post: async (values) => {
         let headers = {}
         if(token){
-          t = await token()
+          const t = await token()
           headers = {Authorization: `Bearer ${t}`}
         }
         if(myfetch)

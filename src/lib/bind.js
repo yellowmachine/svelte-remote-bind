@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip } from 'rxjs';
+import { buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip, tap } from 'rxjs';
 import { onDestroy } from 'svelte';
 
 const T = 2000;
@@ -26,7 +26,7 @@ export function fromSchema(path){
 }
 
 export function stream({id, client, delay=T}){
-
+    console.log('********************** delay', delay)
     const status = writable('initial')
         
     function pausableInterval(pauser) {    
@@ -69,11 +69,14 @@ export function stream({id, client, delay=T}){
     const stream = new Subject()
     
     const subscription = stream.pipe(
+      tap(()=>console.log("tap 1")),
       skip(1),
-      debounceTime(T),
+      tap(()=>console.log("tap 2")),
+      debounceTime(delay),
+      tap(()=>console.log("tap 3")),
       buffer(pausableInterval(pauser)),
       switchMap((x) => {
-        console.log("switchmap x", x, x.length)
+        //console.log("switchmap x", x, x.length)
         if(x.length > 0) return from(handle(x.at(-1)))
         return NEVER  
       })
