@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
-import { pipe, buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip, tap, of } from 'rxjs';
+import { pipe, buffer, startWith, switchMap, from, interval,
+         NEVER, Subject, debounceTime, skip, tap, take, of } from 'rxjs';
 import { onDestroy } from 'svelte';
 
 const T = 2000;
@@ -28,9 +29,22 @@ export function fromSchema(path){
 export function stream({id, client, delay=T, _test=false}){
     
     const status = writable('initial')
-        
+    
+    function pausableInterval(pauser) {  
+      console.log('llego')  
+      return pauser.pipe(startWith(false), switchMap((paused) => {
+        if(paused){
+          return NEVER
+        }else{
+          console.log('llego 2')
+          return interval(1)
+        }
+      }
+    )
+  )}
+/*
     function pausableInterval(pauser) {    
-        return pauser.pipe(switchMap((paused) => {
+        return pauser.pipe(startWith(false), switchMap((paused) => {
           if(paused){
             return NEVER
           }else{
@@ -39,11 +53,11 @@ export function stream({id, client, delay=T, _test=false}){
         }
       )
     )}
-    
-    async function handle(values){
+  */  
+    async function handle(values, pauser){
         try{
             status.set("saving")	
-            //console.log('saving...')
+            console.log('saving...')
             let response;
             if(id){
               response = await client.put(values, id)
@@ -72,25 +86,29 @@ export function stream({id, client, delay=T, _test=false}){
     function _pipe(h){
       return pipe(
         skip(1),
-        debounceTime(delay),
+        tap(x=>console.log('after skip', x)),
+        debounceTime(1),
         buffer(pausableInterval(pauser)),
         switchMap((x) => {
-          if(x.length > 0) return h(x.at(-1))
+          pauser.next(true)
+          if(x.length > 0) return h(x.at(-1), pauser)
           return NEVER  
         })
       );
     }
 
-    const subscription = stream.pipe(
-      _pipe((x)=>from(handle(x)))
-    ).subscribe({
-      next: (v) => {},
-      complete: (v) => console.log('complete'),
-      error: (err) => console.log(err)
-    });	
-
+    if(!_test){
+      const subscription = stream.pipe(
+        _pipe((x)=>from(handle(x)))
+      ).subscribe({
+        next: (v) => {},
+        complete: (v) => console.log('complete'),
+        error: (err) => console.log(err)
+      });
+    }
+    	
     if(!_test) onDestroy(() => subscription.unsubscribe());
-    pauser.next(false)
+    //pauser.next(false)
 
     return {
         _pipe,

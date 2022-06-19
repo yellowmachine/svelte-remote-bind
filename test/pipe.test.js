@@ -1,38 +1,28 @@
-import { cold, hot } from 'jasmine-marbles';
-import { of, pipe, skip, switchMap, debounceTime } from 'rxjs';
+import { marbles } from "rxjs-marbles/mocha";
+import { map, debounceTime, switchMap, skip, buffer, bufferTime, startWith } from "rxjs/operators";
+import { interval, of, pipe, Subject } from 'rxjs';
+import { describe, it, expect } from 'vitest';
 import { stream } from '../src/lib/bind.js';
 
-describe("testing main pipe", () => {
 
-    it("just the basic sample", () => {
+describe("rxjs-marbles", () => {
+
+    it("just the basic sample", marbles(m => {
         
         function handle(x){
             _setId(35)
-            return {id: 35}
+            return "r"
         }
 
-        const { /*_pipe,*/ _setId } = stream({ delay: 0, _test: true })
-        
-        function _pipe(h){
-            return pipe(
-              skip(1),
-              //debounceTime(1),
-              //buffer(pausableInterval(pauser)),
-              /*switchMap((x) => {
-                return h(x)
-              })
-              */
-            );
-        }
+        const { _pipe, _setId } = stream({ delay: 1, _test: true })
 
-        const values = { a: 1, b: 2, c: 3, r: {id: 35} };
-        const source = cold(  '-a---b-------------|', values);
-        const expected = cold('------r------------|', values);
+        const source = m.hot(  "-a---b-------c-----|");
+        const expected =       "------r-------r----|";
 
-        const result = source.pipe(
+        const destination = source.pipe(
             _pipe((x) => of(handle(x)))
         );
 
-        expect(result).toBeObservable(expected);
-    });
+        m.expect(destination).toBeObservable(expected);
+    }));
 });
