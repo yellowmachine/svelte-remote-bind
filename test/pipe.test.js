@@ -1,28 +1,30 @@
-import { marbles } from "rxjs-marbles/mocha";
-import { map, debounceTime, switchMap, skip, buffer, bufferTime, startWith } from "rxjs/operators";
-import { interval, of, pipe, Subject } from 'rxjs';
-import { describe, it, expect } from 'vitest';
+// to be run with jasmine because vitest gives no output
+import { TestScheduler } from 'rxjs/testing';
+import { of } from 'rxjs';
 import { stream } from '../src/lib/bind.js';
 
+const testScheduler = new TestScheduler((actual, expected) => {
+  console.log(actual)
+  console.log(expected)
+  expect(actual).toEqual(expected);
+});
 
-describe("rxjs-marbles", () => {
+it("testing pipe", ()=>{
+    testScheduler.run(({ expectObservable, hot, cold }) => {
 
-    it("just the basic sample", marbles(m => {
-        
-        function handle(x){
+        function h(x, pauser){
             _setId(35)
+            pauser.next(false)
             return "r"
         }
 
         const { _pipe, _setId } = stream({ delay: 1, _test: true })
 
-        const source = m.hot(  "-a---b-------c-----|");
-        const expected =       "------r-------r----|";
+        const source = cold(   "-a---b-------c-----|");
+        const expected =       "-------r-------r----";
 
-        const destination = source.pipe(
-            _pipe((x) => of(handle(x)))
-        );
-
-        m.expect(destination).toBeObservable(expected);
-    }));
-});
+        expectObservable(source.pipe(
+            _pipe((x, pauser) => of(h(x, pauser)))
+        )).toBe(expected);
+    });
+})
