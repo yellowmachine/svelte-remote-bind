@@ -26,11 +26,10 @@ export function fromSchema(path){
   } 
 }
 
-export function stream({id, client, delay=T, _test=false}){
+export function getInnerStream({id, client, delay=T, _test=false}){
+  const status = writable('initial')
     
-    const status = writable('initial')
-    
-    function pausableInterval(pauser) {  
+  function pausableInterval(pauser) {  
       return pauser.pipe(startWith(false), switchMap((paused) => {
         if(paused){
           return NEVER
@@ -41,66 +40,69 @@ export function stream({id, client, delay=T, _test=false}){
     )
   )}
 
-    async function handle(values, pauser){
-        try{
-            status.set("saving")	
-            //console.log('saving...')
-            let response;
-            if(id){
-              response = await client.put(values, id)
-            }else{
-              response = await client.post(values)
-            }            
-            status.set("saved")
-            //console.log("saved!")	
-            if(!id){
-              id = response[client.key]
-            }
-            return response;            
-        } catch(err){
-            console.log('error!', err);
-            status.set("error")
-            return {error: err}
-        }finally {
-            pauser.next(false)
-        }
-    }
-
-    const pauser = new Subject()
-    const stream = new Subject()
-  
-
-    function _pipe(h){
-      return pipe(
-        skip(1),
-        tap((v)=>{
-          if(_test && v === 'z') pauser.next(false)
-        }),
-        debounceTime(delay),
-        buffer(pausableInterval(pauser)),
-        switchMap((x) => {         
-          if(x.length > 0) {
-            pauser.next(true)
-            return h(x.at(-1), pauser)
+  async function handle(values, pauser){
+      try{
+          status.set("saving")	
+          //console.log('saving...')
+          let response;
+          if(id){
+            response = await client.put(values, id)
+          }else{
+            response = await client.post(values)
+          }            
+          status.set("saved")
+          //console.log("saved!")	
+          if(!id){
+            id = response[client.key]
           }
-          return NEVER  
-        })
-      );
-    }
+          return response;            
+      } catch(err){
+          console.log('error!', err);
+          status.set("error")
+          return {error: err}
+      }finally {
+          pauser.next(false)
+      }
+  }
 
-    let subscription;
-    if(!_test){
-      subscription = stream.pipe(
+  const pauser = new Subject()
+  const stream = new Subject()
+
+
+  function _pipe(h){
+    return pipe(
+      skip(1),
+      tap((v)=>{
+        if(_test && v === 'z') pauser.next(false)
+      }),
+      debounceTime(delay),
+      buffer(pausableInterval(pauser)),
+      switchMap((x) => {         
+        if(x.length > 0) {
+          pauser.next(true)
+          return h(x.at(-1), pauser)
+        }
+        return NEVER  
+      })
+    );
+  }
+  return {stream, status, handle, pauser, _pipe, _setId: (v)=>id=v}
+}
+
+export function stream({id, client, delay=T}){
+  
+    const {stream, status, handle, pauser, _pipe} = getInnerStream({id, client, delay});
+
+    const subscription = stream.pipe(
         _pipe((x)=>from(handle(x, pauser)))
       ).subscribe({
         next: (v) => {},
         complete: (v) => console.log('complete'),
         error: (err) => console.log(err)
       });
-    }
-    	
-    if(!_test) onDestroy(() => subscription.unsubscribe());
-    
+
+    onDestroy(() => subscription.unsubscribe());
+  
     return {
         _pipe,
         _setId: (v) => id=v,

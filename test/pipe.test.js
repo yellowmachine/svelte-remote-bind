@@ -1,7 +1,7 @@
 // to be run with jasmine because vitest gives no output
 import { TestScheduler } from 'rxjs/testing';
 import { of } from 'rxjs';
-import { stream } from '../src/lib/bind.js';
+import { getInnerStream } from '../src/lib/bind.js';
 
 function createTestSchedulter(){
     return new TestScheduler((actual, expected) => {
@@ -21,7 +21,7 @@ it("testing pipe", ()=>{
             return x
         }
 
-        const { _pipe, _setId } = stream({ delay: 1, _test: true })
+        const { _pipe, _setId } = getInnerStream({ delay: 1, _test: true })
 
         const source = cold(   "-a---b-------c-----|");
         const expected =       "-------b-------c----";
@@ -31,7 +31,6 @@ it("testing pipe", ()=>{
         )).toBe(expected);
     });
 })
-
 
 it("testing pipe with debounce", ()=>{
     const testScheduler = createTestSchedulter()
@@ -43,7 +42,7 @@ it("testing pipe with debounce", ()=>{
             return x
         }
 
-        const { _pipe, _setId } = stream({ delay: 1, _test: true })
+        const { _pipe, _setId } = getInnerStream({ delay: 1, _test: true })
 
         const source = cold(   "-a---bc------x-----|");
         const expected =       "--------c------x----";
@@ -64,7 +63,7 @@ it("testing pipe with buffering", ()=>{
             return x
         }
 
-        const { _pipe, _setId } = stream({ delay: 1, _test: true })
+        const { _pipe, _setId } = getInnerStream({ delay: 1, _test: true })
 
         const source = cold(   "-a---bc--x--y--z---|");
         const expected =       "--------c-------y--(z|)";
@@ -74,3 +73,4 @@ it("testing pipe with buffering", ()=>{
         )).toBe(expected);
     });
 })
+
