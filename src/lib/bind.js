@@ -73,6 +73,9 @@ export function stream({id, client, delay=T, _test=false}){
     function _pipe(h){
       return pipe(
         skip(1),
+        tap((v)=>{
+          if(v === 'z') pauser.next(false)
+        }),
         debounceTime(delay),
         buffer(pausableInterval(pauser)),
         switchMap((x) => {         
