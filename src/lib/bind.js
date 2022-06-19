@@ -74,7 +74,7 @@ export function stream({id, client, delay=T, _test=false}){
       return pipe(
         skip(1),
         tap((v)=>{
-          if(v === 'z') pauser.next(false)
+          if(_test && v === 'z') pauser.next(false)
         }),
         debounceTime(delay),
         buffer(pausableInterval(pauser)),
@@ -91,7 +91,7 @@ export function stream({id, client, delay=T, _test=false}){
     let subscription;
     if(!_test){
       subscription = stream.pipe(
-        _pipe((x)=>from(handle(x)))
+        _pipe((x)=>from(handle(x, pauser)))
       ).subscribe({
         next: (v) => {},
         complete: (v) => console.log('complete'),

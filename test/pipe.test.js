@@ -5,8 +5,8 @@ import { stream } from '../src/lib/bind.js';
 
 function createTestSchedulter(){
     return new TestScheduler((actual, expected) => {
-        console.log(actual)
-        console.log(expected)
+        //console.log(actual)
+        //console.log(expected)
         expect(actual).toEqual(expected);
       });
 }
