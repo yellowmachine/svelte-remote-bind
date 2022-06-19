@@ -66,7 +66,7 @@ it("testing pipe with buffering", ()=>{
         const { _pipe, _setId } = getInnerStream({ delay: 1, _test: true })
 
         const source = cold(   "-a---bc--x--y--z---|");
-        const expected =       "--------c-------y--(z|)";
+        const expected =       "--------c-------y---";
 
         expectObservable(source.pipe(
             _pipe((x, pauser) => of(h(x, pauser)))

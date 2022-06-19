@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { pipe, buffer, startWith, switchMap, from, interval,
-         NEVER, Subject, debounceTime, skip, tap, take, of } from 'rxjs';
+         NEVER, Subject, debounceTime, skip, tap, filter } from 'rxjs';
 import { onDestroy } from 'svelte';
 
 const T = 2000;
@@ -72,9 +72,18 @@ export function getInnerStream({id, client, delay=T, _test=false}){
   function _pipe(h){
     return pipe(
       skip(1),
+      ..._test ? [
+        tap((v)=>{
+          if(v === 'z') pauser.next(false)
+        }),
+        filter(v => v !== 'z')
+      ]: [],
+      /*
       tap((v)=>{
         if(_test && v === 'z') pauser.next(false)
       }),
+      filter(v=>!_test || v !== 'z'),
+      */
       debounceTime(delay),
       buffer(pausableInterval(pauser)),
       switchMap((x) => {         
