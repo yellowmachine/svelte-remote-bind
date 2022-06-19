@@ -72,16 +72,12 @@ export function stream({id, client, delay=T, _test=false}){
     function _pipe(h){
       return pipe(
         skip(1),
-        tap(x=>console.log(1, x)),
         debounceTime(delay),
-        tap(x=>console.log(2, x)),
         buffer(pausableInterval(pauser)),
-        tap(x=>console.log(3, x)),
         switchMap((x) => {
-          if(x.length > 0) return h(x.at(-1))//from(handle(x.at(-1)))
+          if(x.length > 0) return h(x.at(-1))
           return NEVER  
-        }),
-        tap(x=>console.log(4, x)),
+        })
       );
     }
 
