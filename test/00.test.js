@@ -35,7 +35,7 @@ it("just the basic sample", () => {
 it("testing pipe", ()=>{
     testScheduler.run(({ expectObservable, hot, cold }) => {
 
-        const pauser = new Subject()
+        //const pauser = new Subject()
 
         function h(x, pauser){
             _setId(35)
@@ -49,8 +49,8 @@ it("testing pipe", ()=>{
         const expected =       "-------r-------r----";
 
         expectObservable(source.pipe(
-            //_pipe((x, pauser) => of(h(x, pauser)))
-            
+            _pipe((x, pauser) => of(h(x, pauser)))
+            /*
             skip(1),
             debounceTime(1),
             buffer(pausableInterval(pauser)),
@@ -61,7 +61,7 @@ it("testing pipe", ()=>{
                 } 
                 return NEVER  
             })
-            
+            */
         )).toBe(expected);
     });
 })
