@@ -1,58 +1,27 @@
-import { marbles } from "rxjs-marbles/mocha";
-import { describe, it } from 'vitest';
-import { stream } from '../src/lib';
-import { pipe, NEVER, Subject } from 'rxjs';
-import { map, skip, debounceTime, interval, buffer, switchMap } from "rxjs/operators";
+import { cold } from 'jasmine-marbles';
+import { of } from 'rxjs';
+import { stream } from '../src/lib/bind.js';
 
-function pausableInterval(pauser) {    
-    return pauser.pipe(switchMap((paused) => {
-      if(paused){
-        return NEVER
-      }else{
-        return interval(0)
-      }
-    }
-  )
-)}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 describe("testing main pipe", () => {
 
-    it("should test basic 'a'", marbles(m => {
-
-        const client = {
-            put: async () => "b",
-            post: async () => "b",
-            key: "id",
+    it("just the basic sample", () => {
+        
+        function handle(x){
+            _setId(35)
+            return {id: 35}
         }
 
-        //const { pipe } = stream({client, delay: 0})
-        const pauser = new Subject()
-        const _pipe = pipe(
-            skip(1),
-            debounceTime(0),
-            buffer(pausableInterval(pauser)),
-            map(value => 'b')
-        )
+        const { _pipe, _setId } = stream({ delay: 0, _test: true })
+        
+        const values = { a: 1, b: 2, c: 3, r: {id: 35} };
+        const source = cold(  '-a-b-c-|', values);
+        const expected = cold('-r-r-r-|', values);
 
-        const source =  m.hot("--^-a-b-c-|");
-        const expected =        "--------(b|)";
-
-        pauser.next(false)
-        const destination = source.pipe(
-            _pipe
+        const result = source.pipe(
+            _pipe((x) => of(handle(x)))
         );
-        m.expect(destination).toBeObservable(expected);
-        //m.expect(source).toHaveSubscriptions(subs);
-
-        /*
-        const source =  m.cold("--x-a|");
-        const expected =        "---b|";
-
-        const destination = source.pipe(
-            pipe
-        );
-        m.expect(destination).toBeObservable(expected);
-        //m.expect(source).toHaveSubscriptions(subs);
-        */
-    }));
+        expect(result).toBeObservable(expected);
+    });
 });

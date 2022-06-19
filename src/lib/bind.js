@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { pipe, buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip, tap } from 'rxjs';
+import { pipe, buffer, switchMap, from, interval, NEVER, Subject, debounceTime, skip, tap, of } from 'rxjs';
 import { onDestroy } from 'svelte';
 
 const T = 2000;
@@ -25,7 +25,7 @@ export function fromSchema(path){
   } 
 }
 
-export function stream({id, client, delay=T}){
+export function stream({id, client, delay=T, _test=false}){
     
     const status = writable('initial')
         
@@ -67,34 +67,38 @@ export function stream({id, client, delay=T}){
 
     const pauser = new Subject()
     const stream = new Subject()
-    
-    const _pipe = pipe(
-      skip(1),
-      tap(x=>console.log(1, x)),
-      debounceTime(delay),
-      tap(x=>console.log(2, x)),
-      buffer(pausableInterval(pauser)),
-      tap(x=>console.log(3, x)),
-      switchMap((x) => {
-        if(x.length > 0) return from(handle(x.at(-1)))
-        return NEVER  
-      }),
-      tap(x=>console.log(4, x)),
-    ); 
+  
+
+    function _pipe(h){
+      return pipe(
+        skip(1),
+        tap(x=>console.log(1, x)),
+        debounceTime(delay),
+        tap(x=>console.log(2, x)),
+        buffer(pausableInterval(pauser)),
+        tap(x=>console.log(3, x)),
+        switchMap((x) => {
+          if(x.length > 0) return h(x.at(-1))//from(handle(x.at(-1)))
+          return NEVER  
+        }),
+        tap(x=>console.log(4, x)),
+      );
+    }
 
     const subscription = stream.pipe(
-      _pipe
+      _pipe((x)=>from(handle(x)))
     ).subscribe({
       next: (v) => {},
       complete: (v) => console.log('complete'),
       error: (err) => console.log(err)
     });	
 
-    //onDestroy(() => subscription.unsubscribe());
+    if(!_test) onDestroy(() => subscription.unsubscribe());
     pauser.next(false)
 
     return {
-        pipe: _pipe,
+        _pipe,
+        _setId: (v) => id=v,
         status,
         save: (item) => stream.next(item),
         saveImmediately: (x) => handle([x])
