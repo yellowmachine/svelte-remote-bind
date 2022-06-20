@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import { pipe, buffer, startWith, switchMap, from, interval,
-         NEVER, Subject, debounceTime, skip, tap, filter } from 'rxjs';
+import { of, timer, pipe, buffer, startWith, switchMap, from, interval,
+         NEVER, Subject, debounceTime, skip, tap, filter, take } from 'rxjs';
 import { onDestroy } from 'svelte';
 
 const T = 2000;
@@ -34,13 +34,13 @@ export function getInnerStream({id, client, delay=T, _test=false}){
         if(paused){
           return NEVER
         }else{
-          return interval(delay)
+          return timer(delay) //interval(delay).pipe(take(2))
         }
       }
     )
   )}
 
-  async function handle(values, pauser){
+  async function handle(values, done){
       try{
           status.set("saving")	
           //console.log('saving...')
@@ -61,35 +61,40 @@ export function getInnerStream({id, client, delay=T, _test=false}){
           status.set("error")
           return {error: err}
       }finally {
-          pauser.next(false)
+          done()
       }
   }
 
   const pauser = new Subject()
   const stream = new Subject()
 
+  let buffering = false;
 
   function _pipe(h){
     return pipe(
       skip(1),
       ..._test ? [
         tap((v)=>{
-          if(v === 'z') pauser.next(false)
+          if(v === 'z'){
+            pauser.next(false)
+            buffering = false
+          }
         }),
         filter(v => v !== 'z')
       ]: [],
-      /*
-      tap((v)=>{
-        if(_test && v === 'z') pauser.next(false)
-      }),
-      filter(v=>!_test || v !== 'z'),
-      */
       debounceTime(delay),
+      tap(v => {
+        if(!buffering) pauser.next(false)
+      }),
       buffer(pausableInterval(pauser)),
       switchMap((x) => {         
         if(x.length > 0) {
           pauser.next(true)
-          return h(x.at(-1), pauser)
+          buffering = true;
+          return h(x.at(-1), ()=>{
+            buffering = false
+            pauser.next(false)
+          })
         }
         return NEVER  
       })
