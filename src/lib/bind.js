@@ -16,14 +16,14 @@ export function fromSchema(path){
   const schema = schemas[schemaName]
 
   return {
-    delay: schema.delay,
+    delay: schema.delay === undefined ? 1000: schema.delay,
     myfetch: schema.fetch,
-    token: schema.token,
-    key: schema.entities[entity].key,
+    token: schema.token || null,
+    key: schema.entities[entity].key || "id",
     entitySchema: schema.entities[entity].name,
-    url: schema.baseUrl + schema.entities[entity].path,
-    validation: schema.entities[entity].validation,
-    errors: schema.entities[entity].errors
+    url: schema.baseUrl + (schema.entities[entity].path || "id"),
+    validation: schema.entities[entity].validation || (()=>true),
+    errors: schema.entities[entity].errors || (()=>({}))
   } 
 }
 

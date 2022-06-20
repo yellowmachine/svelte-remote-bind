@@ -34,11 +34,7 @@
     let schema = {
         //default to fetch
         fetch: async ({url, headers, method, body, entitySchema}) => {
-            //entitySchema is useful when doing a GraphQL query 
-            //pseudocode:
-            //let query = method === 'POST'?entitySchema.addQuery:entitySchema.updateQuery;
-            //const response = await GraphQLClient.fetch({url, query, headers, variables: body});
-            //return entitySchema.key(response)
+            //mock fetch
             await sleep(2000)
             if(returnCode === 400)
                 throw "Error"
