@@ -15,9 +15,9 @@ it("testing pipe", ()=>{
     const testScheduler = createTestSchedulter()
     testScheduler.run(({ expectObservable, hot, cold }) => {
 
-        function h(x, pauser){
+        function h(x, done){
             _setId(35)
-            pauser.next(false)
+            done()
             return x
         }
 
@@ -36,9 +36,10 @@ it("testing pipe with debounce", ()=>{
     const testScheduler = createTestSchedulter()
     testScheduler.run(({ expectObservable, hot, cold }) => {
 
-        function h(x, pauser){
+        function h(x, done){
             _setId(35)
-            pauser.next(false)
+            //pauser.next(false)
+            done()
             return x
         }
 
@@ -57,7 +58,7 @@ it("testing pipe with buffering", ()=>{
     const testScheduler = createTestSchedulter()
     testScheduler.run(({ expectObservable, hot, cold }) => {
 
-        function h(x, pauser){
+        function h(x, done){
             _setId(35)
             //pauser.next(false)
             return x
@@ -69,7 +70,7 @@ it("testing pipe with buffering", ()=>{
         const expected =       "--------c-------y---";
 
         expectObservable(source.pipe(
-            _pipe((x, pauser) => of(h(x, pauser)))
+            _pipe((x, done) => of(h(x, done)))
         )).toBe(expected);
     });
 })
