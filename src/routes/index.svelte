@@ -32,23 +32,29 @@
     }
 
     let schema = {
-        fetch: async ({url, headers, method, body}) => {
+        //default to fetch
+        fetch: async ({url, headers, method, body, entitySchema}) => {
+            //entitySchema is useful when doing a GraphQL query 
+            //pseudocode:
+            //let query = method === 'POST'?entitySchema.addQuery:entitySchema.updateQuery;
+            //const response = await GraphQLClient.fetch({url, query, headers, variables: body});
+            //return entitySchema.key(response)
             await sleep(2000)
             if(returnCode === 400)
                 throw "Error"
             else 
                 return {id: 1}
         },
-        delay: 1000,
-        token: async () => "Bearer ABC",
+        delay: 1000, //default to 1000
+        token: async () => "Bearer ABC", //default to null
         name: "endpoint",
         baseUrl: "http://localhost:8080/api",
         entities: {
             cat: {
-                path: "/cat",
-                validation: (data) => suite(data).isValid(),
-                errors: (data) => suite(data),
-                key: "id"
+                path: "/cat", //default to ""
+                validation: (data) => suite(data).isValid(), //default to () => true
+                errors: (data) => suite(data), //default to () => ({})
+                key: "id" //default to "id", it can be a function like (data) => data['cat']['id']
             }
         }
     }

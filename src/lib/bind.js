@@ -20,6 +20,7 @@ export function fromSchema(path){
     myfetch: schema.fetch,
     token: schema.token,
     key: schema.entities[entity].key,
+    entitySchema: schema.entities[entity].name,
     url: schema.baseUrl + schema.entities[entity].path,
     validation: schema.entities[entity].validation,
     errors: schema.entities[entity].errors

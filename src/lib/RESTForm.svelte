@@ -5,9 +5,9 @@ import {stream, fromSchema} from './bind';
 export let id = null;
 export let remoteBind;
 
-let {url, validation, errors, key, myfetch, token, delay} = fromSchema(remoteBind)
+let {url, validation, errors, key, myfetch, token, delay, entitySchema} = fromSchema(remoteBind)
 
-const client = RESTClient({url, key, myfetch, token});
+const client = RESTClient({url, key, myfetch, token, entitySchema});
 const { save, status} = stream({client, id, delay})
 
 export let item;
