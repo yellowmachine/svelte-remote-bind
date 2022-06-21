@@ -5,8 +5,10 @@ const schemas = {}
 module.exports = {
   remoteMachineFactory: ({ schema, path}) => {
 
-    //const [name, entity] = path.split(':')
+    const [name, entity] = path.split(':')
     const myfetchv2 = schema.fetch
+    const url = schema.baseUrl + schema.entities[entity].path
+    const token = schema.token
 
     return createMachine({
       id: "toggle",
@@ -44,7 +46,7 @@ module.exports = {
             },
           },
           invoke: {
-            src: (context, event) => myfetchv2(context.current),
+            src: async (context, event) => await myfetchv2({url, token: await token(), method: 'PUT', body: context.current}),
             onDone: {
               target: "iddle",
             },

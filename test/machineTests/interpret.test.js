@@ -12,7 +12,12 @@ it('should reach initial from initial on TYPE', (done) => {
         count++
         if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== 'initial') {
           expect(count).toBe(3)
-          expect(myfetch.mock.results[0].value).resolves.toBe('xyz');
+          expect(myfetch.mock.results[0].value).resolves.toMatchObject({
+            url: 'http://localhost:8080/api/cat',
+            method: 'PUT',
+            token: 'Bearer ABC',
+            body: 'xyz'
+          });
           done()
         }
       })
@@ -32,8 +37,18 @@ it('should reach initial from initial on two TYPE', (done) => {
       count++
       if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== 'initial') {
         expect(count).toBe(5)
-        expect(myfetch.mock.results[0].value).resolves.toBe('xyz');
-        expect(myfetch.mock.results[1].value).resolves.toBe('abc');
+        expect(myfetch.mock.results[0].value).resolves.toMatchObject({
+          url: 'http://localhost:8080/api/cat',
+          method: 'PUT',
+          token: 'Bearer ABC',
+          body: 'xyz'
+        });
+        expect(myfetch.mock.results[1].value).resolves.toMatchObject({
+          url: 'http://localhost:8080/api/cat',
+          method: 'PUT',
+          token: 'Bearer ABC',
+          body: 'abc'
+        });
         
         done()
       }
