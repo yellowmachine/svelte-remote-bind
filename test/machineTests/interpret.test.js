@@ -1,10 +1,10 @@
 const { interpret } = require("xstate");
-const remoteMachineFactory = require('../../src/lib/machine')
-
+const { remoteMachineFactory, register } = require('../../src/lib/machine')
+const schema = require('./schema')
 
 it('should reach initial from initial on TYPE', (done) => {
     const myfetch = jest.fn(async x => x)    
-    const remoteMachine = remoteMachineFactory({myfetch})
+    const remoteMachine = remoteMachineFactory({ schema: {...schema, fetch: myfetch}, path: 'endpoint:cat'})
 
     let count = 0;
     const service = interpret(remoteMachine)
@@ -24,7 +24,7 @@ it('should reach initial from initial on TYPE', (done) => {
   
 it('should reach initial from initial on two TYPE', (done) => {
   const myfetch = jest.fn(async x => x)  
-  const remoteMachine = remoteMachineFactory({myfetch})
+  const remoteMachine = remoteMachineFactory({schema: {...schema, fetch: myfetch}, path: 'endpoint:cat'})
 
   let count = 0;
   const service = interpret(remoteMachine)

@@ -1,10 +1,9 @@
-const remoteMachineFactory = require('../../src/lib/machine')
-
-const myfetch = (x) => Promise.resolve(1)
+const { remoteMachineFactory } = require('../../src/lib/machine')
+const schema = require('./schema')
 
 it('should reach fetching from initial on TYPE', () => {
 
-    const remoteMachine = remoteMachineFactory({myfetch})
+    const remoteMachine = remoteMachineFactory({schema, path: "endpoint:cat"})
     
     const expectedValue = 'buffering';
   
