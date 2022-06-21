@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import { catchError, timer, pipe, buffer, startWith, switchMap, from, interval,
-         NEVER, Subject, debounceTime, skip, tap, filter, take } from 'rxjs';
+import { catchError, timer, pipe, buffer, startWith, switchMap, from, interval, EMPTY,
+         NEVER, Subject, debounceTime, skip, tap, filter, take, of } from 'rxjs';
 import { onDestroy } from 'svelte';
 
 const T = 2000;
@@ -60,7 +60,8 @@ export function getInnerStream({id, client, delay=T, _test=false}){
       } catch(err){
           console.log('error!', err);
           status.set("error")
-          throw new Error(err)
+          return undefined //{error: err}
+          //throw new Error(err)
       }finally {
           done()
       }
@@ -85,6 +86,7 @@ export function getInnerStream({id, client, delay=T, _test=false}){
       ]: [],
       debounceTime(delay),
       tap(v => {
+        //console.log(v)
         if(!buffering) pauser.next(false)
       }),
       buffer(pausableInterval(pauser)),
@@ -95,11 +97,13 @@ export function getInnerStream({id, client, delay=T, _test=false}){
           return h(x.at(-1), ()=>{
             buffering = false
             pauser.next(false)
-          })
+          }).pipe(switchMap(x => {
+            if(x === undefined) return NEVER
+            return of(x)
+          }))
         }
         return NEVER  
-      }),
-      catchError(err => NEVER)
+      })
     );
   }
   return {stream, status, handle, pauser, _pipe, _setId: (v)=>id=v}
@@ -110,7 +114,7 @@ export function stream({id, client, delay=T}){
     const {stream, status, handle, pauser, _pipe} = getInnerStream({id, client, delay});
 
     const subscription = stream.pipe(
-        _pipe((x)=>from(handle(x, pauser)))
+        _pipe((x, done)=>from(handle(x, done)))
       ).subscribe({
         next: (v) => {},
         complete: (v) => console.log('complete'),
