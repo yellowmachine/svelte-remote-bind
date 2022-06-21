@@ -14,6 +14,7 @@ module.exports = {
       id: "toggle",
       initial: "iddle",
       context: {
+        id: null,
         buffer: [],
         current: "initial",
       },
@@ -46,9 +47,15 @@ module.exports = {
             },
           },
           invoke: {
-            src: async (context, event) => await myfetchv2({url, token: await token(), method: 'PUT', body: context.current}),
+            src: async (context, event) => await myfetchv2({
+              url, 
+              token: await token(), 
+              method: context.id !== null ? 'PUT': 'POST', 
+              body: context.current
+            }),
             onDone: {
               target: "iddle",
+              actions: assign({id: (context, event) => event.id})
             },
           },
         },

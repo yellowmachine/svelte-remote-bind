@@ -12,9 +12,9 @@ it('should reach initial from initial on TYPE', (done) => {
         count++
         if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== 'initial') {
           expect(count).toBe(3)
-          expect(myfetch.mock.results[0].value).resolves.toMatchObject({
+          expect(myfetch.mock.calls[0][0]).toMatchObject({
             url: 'http://localhost:8080/api/cat',
-            method: 'PUT',
+            method: 'POST',
             token: 'Bearer ABC',
             body: 'xyz'
           });
@@ -28,7 +28,8 @@ it('should reach initial from initial on TYPE', (done) => {
 });
   
 it('should reach initial from initial on two TYPE', (done) => {
-  const myfetch = jest.fn(async x => x)  
+  const myfetch = jest.fn()  
+  myfetch.mockReturnValueOnce(Promise.resolve({id: 3})).mockReturnValueOnce(Promise.resolve({}))
   const remoteMachine = remoteMachineFactory({schema: {...schema, fetch: myfetch}, path: 'endpoint:cat'})
 
   let count = 0;
@@ -37,13 +38,13 @@ it('should reach initial from initial on two TYPE', (done) => {
       count++
       if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== 'initial') {
         expect(count).toBe(5)
-        expect(myfetch.mock.results[0].value).resolves.toMatchObject({
+        expect(myfetch.mock.calls[0][0]).toMatchObject({
           url: 'http://localhost:8080/api/cat',
-          method: 'PUT',
+          method: 'POST',
           token: 'Bearer ABC',
           body: 'xyz'
         });
-        expect(myfetch.mock.results[1].value).resolves.toMatchObject({
+        expect(myfetch.mock.calls[1][0]).toMatchObject({
           url: 'http://localhost:8080/api/cat',
           method: 'PUT',
           token: 'Bearer ABC',
