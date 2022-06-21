@@ -75,3 +75,24 @@ it("testing pipe with buffering", ()=>{
     });
 })
 
+it("testing pipe with buffering and errors", ()=>{
+    const testScheduler = createTestSchedulter()
+    testScheduler.run(({ expectObservable, hot, cold }) => {
+
+        function h(x, done){
+            if(x === 'a')
+                return x
+            else throw new Error('not a!')
+        }
+
+        const { _pipe } = getInnerStream({ delay: 1, _test: true })
+
+        const source = cold(   "-a---ba--x--a--z---w--|");
+        const expected =       "--------a-------a------";
+
+        expectObservable(source.pipe(
+            _pipe((x, done) => of(h(x, done)))
+        )).toBe(expected);
+    });
+})
+

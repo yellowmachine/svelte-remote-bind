@@ -60,6 +60,8 @@
 
 </script>
 
+<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Link to repo</a>
+
 <div>It's my cat ;)</div>
 
 <RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:status let:verrors>

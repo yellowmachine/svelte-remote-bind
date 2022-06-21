@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { of, timer, pipe, buffer, startWith, switchMap, from, interval,
+import { catchError, timer, pipe, buffer, startWith, switchMap, from, interval,
          NEVER, Subject, debounceTime, skip, tap, filter, take } from 'rxjs';
 import { onDestroy } from 'svelte';
 
@@ -60,7 +60,7 @@ export function getInnerStream({id, client, delay=T, _test=false}){
       } catch(err){
           console.log('error!', err);
           status.set("error")
-          return {error: err}
+          throw new Error(err)
       }finally {
           done()
       }
@@ -98,7 +98,8 @@ export function getInnerStream({id, client, delay=T, _test=false}){
           })
         }
         return NEVER  
-      })
+      }),
+      catchError(err => NEVER)
     );
   }
   return {stream, status, handle, pauser, _pipe, _setId: (v)=>id=v}
