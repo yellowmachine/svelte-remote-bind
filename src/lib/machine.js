@@ -20,7 +20,7 @@ module.exports = createMachine({
       ],
       on: {
         TYPE: {
-          target: "buffering.fetching",
+          target: "buffering",
           actions: assign({
             buffer: (context, event) => [...context.buffer, event.data],
           }),
@@ -28,28 +28,23 @@ module.exports = createMachine({
       },
     },
     buffering: {
-      initial: "fetching",
+      entry: assign({
+        buffer: () => [],
+        current: (context) => context.buffer.at(-1),
+      }),
+      on: {
+        TYPE: {
+          internal: true,
+          target: "buffering",
+          actions: assign({
+            buffer: (context, event) => [...context.buffer, event.data],
+          }),
+        },
+      },
       invoke: {
         src: (context, event) => myfetch(context.current),
         onDone: {
           target: "iddle",
-        },
-      },
-      states: {
-        fetching: {
-          entry: assign({
-            buffer: () => [],
-            current: (context) => context.buffer.at(-1),
-          }),
-          on: {
-            TYPE: {
-              internal: true,
-              target: "fetching",
-              actions: assign({
-                buffer: (context, event) => [...context.buffer, event.data],
-              }),
-            },
-          },
         },
       },
     },
