@@ -29,7 +29,7 @@ it('should reach initial from initial on TYPE', (done) => {
   
 it('should reach initial from initial on two TYPE', (done) => {
   const myfetch = jest.fn()  
-  myfetch.mockReturnValueOnce(Promise.resolve({id: 3})).mockReturnValueOnce(Promise.resolve({}))
+  myfetch.mockReturnValueOnce(Promise.resolve({id: 3})).mockReturnValueOnce(Promise.resolve({id: 3}))
   const remoteMachine = remoteMachineFactory({schema: {...schema, fetch: myfetch}, path: 'endpoint:cat'})
 
   let count = 0;
