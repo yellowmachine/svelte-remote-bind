@@ -28,6 +28,7 @@
 		"graphql": "^16.5.0",
 		"graphql-request": "^4.3.0",
 		"jasmine": "^4.2.1",
+		"jest": "^28.1.1",
 		"jsdom": "^19.0.0",
 		"postcss": "^8.4.14",
 		"prettier": "^2.5.1",
@@ -44,6 +45,7 @@
 	"type": "module",
 	"dependencies": {
 		"rxjs": "^7.5.5",
-		"typescript": "^4.7.3"
+		"typescript": "^4.7.3",
+		"xstate": "^4.32.1"
 	}
 }
