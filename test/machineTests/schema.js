@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     //fetch: jest.fn(async x => x),
     token: async () => "Bearer ABC", //default to null
     name: "endpoint",
