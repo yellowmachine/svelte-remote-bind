@@ -1,19 +1,17 @@
-const { assign, createMachine } = require("xstate");
+//const { assign, createMachine } = require("xstate");
+import { assign, createMachine } from 'xstate'
 
-const schemas = {}
-
-module.exports = {
-  remoteMachineFactory: ({ schema, entity}) => {
+export const remoteMachineFactory = ({ id=null, schema, entity}) => {
 
     const myfetchv2 = schema.fetch
     const url = schema.baseUrl + schema.entities[entity].path
     const token = schema.token
 
     return createMachine({
-      id: "toggle",
+      id: "remote-bind",
       initial: "iddle",
       context: {
-        id: null,
+        id,
         buffer: [],
         current: "initial",
       },
@@ -71,8 +69,4 @@ module.exports = {
         },
       },
     });
-  },
-  register: (schema) => {
-    schemas[schema.name] = schema
   }
-}

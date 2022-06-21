@@ -1,9 +1,9 @@
-const { remoteMachineFactory } = require('../../src/lib/machine')
-const schema = require('./schema')
+import { remoteMachineFactory } from '../../src/lib/machine';
+import schema from './schema';
 
 it('should reach fetching from initial on TYPE', () => {
 
-    const remoteMachine = remoteMachineFactory({schema, path: "endpoint:cat"})
+    const remoteMachine = remoteMachineFactory({schema, entity: "cat"})
     
     const expectedValue = 'buffering';
   

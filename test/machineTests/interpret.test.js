@@ -1,10 +1,11 @@
-const { interpret } = require("xstate");
-const { remoteMachineFactory, register } = require('../../src/lib/machine')
-const schema = require('./schema')
+import { interpret } from "xstate";
+import { remoteMachineFactory } from '../../src/lib/machine';
+import schema from './schema';
+import {jest} from '@jest/globals';
 
 it('should reach initial from initial on TYPE', (done) => {
     const myfetch = jest.fn(async x => x)    
-    const remoteMachine = remoteMachineFactory({ schema: {...schema, fetch: myfetch}, path: 'endpoint:cat'})
+    const remoteMachine = remoteMachineFactory({ schema: {...schema, fetch: myfetch}, entity: 'cat'})
 
     let count = 0;
     const service = interpret(remoteMachine)
@@ -30,7 +31,7 @@ it('should reach initial from initial on TYPE', (done) => {
 it('should reach initial from initial on two TYPE', (done) => {
   const myfetch = jest.fn()  
   myfetch.mockReturnValueOnce(Promise.resolve({id: 3})).mockReturnValueOnce(Promise.resolve({id: 3}))
-  const remoteMachine = remoteMachineFactory({schema: {...schema, fetch: myfetch}, path: 'endpoint:cat'})
+  const remoteMachine = remoteMachineFactory({schema: {...schema, fetch: myfetch}, entity: 'cat'})
 
   let count = 0;
   const service = interpret(remoteMachine)
