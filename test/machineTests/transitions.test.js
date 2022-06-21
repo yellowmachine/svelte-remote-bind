@@ -1,6 +1,11 @@
-const remoteMachine = require('../../src/lib/machine')
+const remoteMachineFactory = require('../../src/lib/machine')
+
+const myfetch = (x) => Promise.resolve(1)
 
 it('should reach fetching from initial on TYPE', () => {
+
+    const remoteMachine = remoteMachineFactory({myfetch})
+    
     const expectedValue = 'buffering';
   
     let actualState = remoteMachine.transition('iddle', { type: 'TYPE', data: 'a' });
