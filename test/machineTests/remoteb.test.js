@@ -1,5 +1,5 @@
 const { interpret } = require("xstate");
-const remoteMachine = require('./remote.machine')
+const remoteMachine = require('../../src/lib/machine')
 
 it('should reach initial from initial on TYPE', (done) => {
     

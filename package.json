@@ -2,6 +2,7 @@
 	"name": "svelte-remote-bind",
 	"version": "0.0.1",
 	"scripts": {
+		"testmachine": "jest test/machineTests",
 		"test": "vitest test/remoteform.test.js",
 		"jasmine": "jasmine test/pipe.test.js",
 		"testall": "vitest run test/remoteform.test.js && jasmine test/pipe.test.js",

@@ -1,4 +1,4 @@
-const remoteMachine = require('./remote.machine')
+const remoteMachine = require('../../src/lib/machine')
 
 it('should reach fetching from initial on TYPE', () => {
     const expectedValue = 'buffering.fetching';
