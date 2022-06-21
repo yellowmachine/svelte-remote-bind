@@ -16,7 +16,7 @@ module.exports = createMachine({
   states: {
     iddle: {
       always: [
-          { target: 'buffering', cond: 'isBuffer' }
+          { target: 'buffering', cond: (context) => context.buffer.length > 0 }
       ],
       on: {
         TYPE: {
@@ -54,11 +54,4 @@ module.exports = createMachine({
       },
     },
   },
-},
-{
-    guards: {
-      isBuffer: (context) => {
-        return context.buffer.length > 0;
-      }
-    }
-  });
+});
