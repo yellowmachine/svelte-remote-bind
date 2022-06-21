@@ -3,9 +3,8 @@ const { assign, createMachine } = require("xstate");
 const schemas = {}
 
 module.exports = {
-  remoteMachineFactory: ({ schema, path}) => {
+  remoteMachineFactory: ({ schema, entity}) => {
 
-    const [name, entity] = path.split(':')
     const myfetchv2 = schema.fetch
     const url = schema.baseUrl + schema.entities[entity].path
     const token = schema.token
@@ -23,6 +22,16 @@ module.exports = {
           always: [
               { target: 'buffering', cond: (context) => context.buffer.length > 0 }
           ],
+          on: {
+            TYPE: {
+              target: "buffering",
+              actions: assign({
+                buffer: (context, event) => [...context.buffer, event.data],
+              }),
+            },
+          },
+        },
+        error: {
           on: {
             TYPE: {
               target: "buffering",
@@ -57,6 +66,7 @@ module.exports = {
               target: "iddle",
               actions: assign({id: (context, event) => event.id})
             },
+            onError: "error"
           },
         },
       },

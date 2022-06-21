@@ -45,6 +45,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@xstate/svelte": "^2.0.0",
 		"rxjs": "^7.5.5",
 		"typescript": "^4.7.3",
 		"xstate": "^4.32.1"
