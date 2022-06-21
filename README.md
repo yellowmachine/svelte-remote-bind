@@ -2,6 +2,8 @@
 
 ### alert: this is a draft, there's still no beta npm package
 
+The actual implementation is with rxjs, which is really a pain and I think the result code is not deterministic. I'm now working with a simplest implementation with xstate. Soon ;)
+
 (this is a svelte-kit project, so: npm i && npm run dev)
 
 [Demo](https://svelte-remote-bind.surge.sh)
