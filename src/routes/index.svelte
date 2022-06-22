@@ -42,7 +42,7 @@ let machines = {
             else 
                 return {id: 1}
         },
-        delay: 1000, //default to 1000
+        debounceTime: 1000, //default to 1000
         token: async () => "Bearer ABC", //default to null
         name: "endpoint",
         baseUrl: "http://localhost:8080/api",

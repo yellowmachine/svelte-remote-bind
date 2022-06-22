@@ -1,4 +1,5 @@
 <script>
+    import { debounce } from "debounce";
     import { remoteMachineFactory } from './machine'
     import { useMachine } from '@xstate/svelte';
     import { getContext } from 'svelte';
@@ -9,6 +10,7 @@
     const { machines } = getContext('machines')
     const [name, entity] = remoteBind.split(':');
     const schema = machines[name]
+    const T = schema.debounceTime || 1000;
     
     const { validation, errors } = schema.entities[entity];
     const m = remoteMachineFactory({id, schema, entity});
@@ -16,7 +18,10 @@
     const { state, send } = useMachine(m);
     export let item;
 
+    const debouncedSend = debounce(send, T)
+
     $: if(validation(item)) send('TYPE', {data: item})
+    //$: if(validation(item)) debouncedSend('TYPE', {data: item})
     
 </script>
   
