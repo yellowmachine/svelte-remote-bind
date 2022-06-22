@@ -2,7 +2,7 @@
 	"name": "svelte-remote-bind",
 	"version": "0.0.1",
 	"scripts": {
-		"test": "vitest test/",
+		"test": "vitest test/machine.form.test.js",
 		"coverage": "vitest run --coverage",
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",

@@ -1,21 +1,9 @@
 <script lang="ts">
     import { setContext } from 'svelte';
     import { RemoteForm} from '../src/lib';
+    export let endpoint;
 
-    let endpoint = {
-        fetch,
-        token: async () => "Bearer ABC", //default to null
-        name: "endpoint",
-        baseUrl: "http://localhost:8080/api",
-        entities: {
-            cat: {
-                path: "/cat", //default to ""
-                validation: (data) => true, //default to () => true
-                errors: (data) => ({}), //default to () => ({})
-                key: "id" //default to "id", it can be a function like (data) => data.cat.id if your are going to use it yourself in your custom fetch
-            }
-        }
-    }
+    console.log("**************************", endpoint)
 
     setContext("machines", {
         endpoint
