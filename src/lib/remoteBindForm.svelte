@@ -17,11 +17,14 @@
     
     const { state, send } = useMachine(m);
     export let item;
+    let pristine = true;
 
     const debouncedSend = debounce(send, T)
 
-    $: if(validation(item)) send('TYPE', {data: item})
-    //$: if(validation(item)) debouncedSend('TYPE', {data: item})
+    $: if(validation(item)) {
+        if(pristine) pristine = false
+        else send('TYPE', {data: item}) //debouncedSend('TYPE', {data: item})
+    } 
     
 </script>
   

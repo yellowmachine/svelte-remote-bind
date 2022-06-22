@@ -13,7 +13,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
       context: {
         id,
         buffer: [],
-        current: "initial",
+        current: "initial", //TODO: try to put null and pass tests
       },
       states: {
         iddle: {
