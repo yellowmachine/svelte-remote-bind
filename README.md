@@ -2,7 +2,7 @@
 
 ### alert: this is a draft, there's still no beta npm package
 
-The actual implementation is with rxjs, which is really a pain and I think the result code is not deterministic. I'm now working with a simplest implementation with xstate. Soon ;)
+The actual implementation is with xstate.
 
 (this is a svelte-kit project, so: npm i && npm run dev)
 
@@ -12,8 +12,8 @@ Do you want to write some code like?
 
 ```js
 <script lang="ts">
-
-    import {register, RemoteForm} from '$lib';
+    import { setContext } from 'svelte';
+    import { RemoteForm} from '$lib';
     import { create, test, enforce } from 'vest';
 
     const suite = create((data = {}) => {
@@ -31,7 +31,7 @@ Do you want to write some code like?
 
     });
 
-    let schema = {
+    let machines = {
         //default to fetch
         fetch: async ({url, headers, method, body, entitySchema}) => {
             //entitySchema is useful when doing a GraphQL query 
@@ -40,7 +40,7 @@ Do you want to write some code like?
             const response = await GraphQLClient.fetch({url, query, headers, variables: body});
             return entitySchema.key(response)
         },
-        delay: 1000, //default to 1000
+        debounceTime: 1000, //default to 1000
         token: async () => "Bearer ABC", //default to null
         name: "endpoint",
         baseUrl: "http://localhost:8080/api",
@@ -54,17 +54,20 @@ Do you want to write some code like?
         }
     }
 
-    register(schema)
+    setContext("machines", {
+        machines
+    });
+
     let cat = {name: 'fuffy', age: 1 } 
 
 </script>
 
 <div>It's my cat ;)</div>
 
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:status let:verrors>
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
     Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
     Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    <div class={`${status}`}>Status: {status}</div>
+    <div class={`${state}`}>State: {state}</div>
     <div>Errors: {JSON.stringify(verrors.tests)}</div>
 </RemoteForm>
 ```

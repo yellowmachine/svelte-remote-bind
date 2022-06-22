@@ -13,7 +13,6 @@ beforeEach(() => {
     mockFetch.clearAll();
 });
   
-//import { callApi, callApiPost } from './_api'
 import C from './C.svelte';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));

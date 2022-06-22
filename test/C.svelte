@@ -1,36 +1,35 @@
 <script lang="ts">
-    import {register, RemoteForm} from '../src/lib';
+    import {RemoteForm} from '../src/lib';
+    import { setContext } from 'svelte';
 
-    let schema = {
+    let machines = {
         fetch,
-        delay: 0,
         token: async () => "Bearer ABC",
         name: "endpoint",
         baseUrl: "http://localhost:8080/api",
         entities: {
             cat: {
                 path: "/cat",
-                validation: (data) => data.name.endsWith("ffy"),
-                errors: (data) => {
-                    if(!data.name.endsWith("ffy"))
-                        return {name: "Not valid name"}
-                    return {}
-                },
+                validation: () => true,
+                errors: () => ({}),
                 key: "id"
             }
         }
     }
 
-    register(schema)
+    setContext("machines", {
+        machines
+    });
+    
     let cat = {name: 'fuffy', age: 1 } 
 
 </script>
 
 <div>{cat.name}: It's my cat ;)</div>
 
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:status let:verrors>
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
     Name: <input id="name" type="text" bind:value={cat.name} />
     Age: <input id="age" type="number" bind:value={cat.age} />
-    <div>Status: {status}</div>
+    <div>State: {state}</div>
     <div>Errors: {JSON.stringify(verrors)}</div>
 </RemoteForm>
