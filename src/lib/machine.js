@@ -39,7 +39,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             ],
           on: {
             FETCH: "buffering",
-            TYPE: "debouncing"
+            TYPE: {
+              actions: "bufferIfValidItem",
+              target: "debouncing" 
+            }
           }
         },
         saved: {
