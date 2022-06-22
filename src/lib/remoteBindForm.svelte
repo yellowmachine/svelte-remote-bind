@@ -1,5 +1,5 @@
 <script>
-    import { debounce } from "debounce";
+    //import { debounce } from "debounce";
     import { remoteMachineFactory } from './machine'
     import { useMachine } from '@xstate/svelte';
     import { getContext } from 'svelte';
@@ -19,11 +19,11 @@
     export let item;
     let pristine = true;
 
-    const debouncedSend = debounce(send, T)
+    //const debouncedSend = debounce(send, T)
 
-    $: if(validation(item)) {
+    $:{
         if(pristine) pristine = false
-        else send('TYPE', {data: item}) //debouncedSend('TYPE', {data: item})
+        else if(validation(item)) send('TYPE', {data: item}) //debouncedSend('TYPE', {data: item}) 
     } 
     
 </script>

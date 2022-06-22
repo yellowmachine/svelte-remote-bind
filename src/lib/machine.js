@@ -1,4 +1,3 @@
-//const { assign, createMachine } = require("xstate");
 import { assign, createMachine } from 'xstate'
 
 export const remoteMachineFactory = ({ id=null, schema, entity}) => {
