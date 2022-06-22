@@ -17,12 +17,12 @@
     
     const { state, send } = useMachine(m);
     export let item;
-    let pristine = true;
+    let skip = true;
 
     //const debouncedSend = debounce(send, T)
 
     $:{
-        if(pristine) pristine = false
+        if(skip) skip = false
         else if(validation(item)) send('TYPE', {data: item}) //debouncedSend('TYPE', {data: item}) 
     } 
     

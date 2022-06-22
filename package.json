@@ -3,8 +3,7 @@
 	"version": "0.0.1",
 	"scripts": {
 		"testv0": "vitest test/remoteform.test.js",
-		"testv2": "vitest test/machineTests",
-		"test": "vitest",
+		"test": "vitest test/machineTests",
 		"coverage": "vitest run --coverage",
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
