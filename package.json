@@ -2,12 +2,9 @@
 	"name": "svelte-remote-bind",
 	"version": "0.0.1",
 	"scripts": {
-		"jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js test/machineTests",
-		"testmachine": "jest test/machineTests",
-		"test": "vitest test/remoteform.test.js",
+		"testv0": "vitest test/remoteform.test.js",
 		"testv2": "vitest test/machineTests",
-		"jasmine": "jasmine test/pipe.test.js",
-		"testall": "vitest run test/remoteform.test.js && jasmine test/pipe.test.js",
+		"test": "vitest",
 		"coverage": "vitest run --coverage",
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
@@ -45,6 +42,7 @@
 	"type": "module",
 	"dependencies": {
 		"@xstate/svelte": "^2.0.0",
+		"debounce": "^1.2.1",
 		"typescript": "^4.7.3",
 		"xstate": "^4.32.1"
 	}
