@@ -5,6 +5,7 @@
 		"jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js test/machineTests",
 		"testmachine": "jest test/machineTests",
 		"test": "vitest test/remoteform.test.js",
+		"testv2": "vitest test/machineTests",
 		"jasmine": "jasmine test/pipe.test.js",
 		"testall": "vitest run test/remoteform.test.js && jasmine test/pipe.test.js",
 		"coverage": "vitest run --coverage",

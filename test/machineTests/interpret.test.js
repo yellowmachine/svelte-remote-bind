@@ -1,10 +1,14 @@
 import { interpret } from "xstate";
 import { remoteMachineFactory } from '../../src/lib/machine';
 import schema from './schema';
-import {jest} from '@jest/globals';
+//import {jest} from '@jest/globals';
+import { it, expect, vi } from 'vitest';
 
-it('should reach initial from initial on TYPE', (done) => {
-    const myfetch = jest.fn(async x => x)    
+it('should reach initial from initial on TYPE', async () => {
+    //const myfetch = jest.fn(async x => x)    
+    let resolve
+    const promise = new Promise(_resolve => resolve = _resolve)
+    const myfetch = vi.fn()
     const remoteMachine = remoteMachineFactory({ schema: {...schema, fetch: myfetch}, entity: 'cat'})
 
     let count = 0;
@@ -19,17 +23,22 @@ it('should reach initial from initial on TYPE', (done) => {
             token: 'Bearer ABC',
             body: 'xyz'
           });
-          done()
+          resolve()
         }
       })
       .start();
 
     service.send('TYPE', {data: "xyz"});
-    
+    await promise
 });
   
-it('should reach initial from initial on two TYPE', (done) => {
-  const myfetch = jest.fn()  
+it('should reach initial from initial on two TYPE', async () => {
+  //const myfetch = jest.fn()  
+
+  let resolve
+  const promise = new Promise(_resolve => resolve = _resolve)
+
+  const myfetch = vi.fn()
   myfetch.mockReturnValueOnce(Promise.resolve({id: 3})).mockReturnValueOnce(Promise.resolve({id: 3}))
   const remoteMachine = remoteMachineFactory({schema: {...schema, fetch: myfetch}, entity: 'cat'})
 
@@ -52,12 +61,13 @@ it('should reach initial from initial on two TYPE', (done) => {
           body: 'abc'
         });
         
-        done()
+        //done()
+        resolve()
       }
     })
     .start();
 
   service.send('TYPE', {data: "xyz"});
   service.send('TYPE', {data: "abc"});
-
+    await promise
 });

@@ -1,5 +1,6 @@
 import { remoteMachineFactory } from '../../src/lib/machine';
 import schema from './schema';
+import { it, expect } from 'vitest';
 
 it('should reach fetching from initial on TYPE', () => {
 
