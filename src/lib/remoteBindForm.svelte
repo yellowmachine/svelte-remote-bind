@@ -1,5 +1,8 @@
 <script>
-    import { debounce } from "debounce";
+    //import { debounce } from "debounce";
+    import pkg from 'debounce';
+    const { debounce } = pkg;
+    
     import { remoteMachineFactory } from './machine'
     import { useMachine } from '@xstate/svelte';
     import { getContext } from 'svelte';
