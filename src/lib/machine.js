@@ -1,7 +1,7 @@
 import { assign, createMachine, actions } from 'xstate';
-const { log } = actions;
+const { log, cancel, send } = actions;
 
-export const remoteMachineFactory = ({ id=null, schema, entity}) => {
+export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => {
 
     const myfetchv2 = schema.fetch
     const url = schema.baseUrl + schema.entities[entity].path
@@ -9,36 +9,58 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
 
     return createMachine({
       id: "remote-bind",
-      initial: "ini",
+      initial: "init",
       context: {
         id,
         buffer: [],
         current: "initial", //TODO: try to put null and pass tests
       },
       states: {
-        ini: {
+        init: {
           entry: log(
             (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'ini'
+            'init'
           ),
           on: {
             TYPE: 'iddle'
           }
         },
-        iddle: {
+        debouncing: {
+          entry: [
+            log(
+            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
+            'debouncing'
+          ),
+          cancel('debouncing'),
+          send("FETCH", {
+            delay: 1000,
+            id: "debouncing"
+          })
+            ],
+          on: {
+            FETCH: "buffering",
+            TYPE: "debouncing"
+          }
+        },
+        saved: {
           entry: log(
             (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
+            'saved'
+          ),
+          always: "iddle"
+        },
+        iddle: {
+          entry: log(
+            (context, event) => `buffer.length: ${context.buffer.length} current: ${context.current}, event: ${JSON.stringify(event)}`,
             'iddle'
           ),
           always: [
-              { target: 'buffering', cond: (context) => context.buffer.length > 0 }
+              { target: 'debouncing', cond: (context) => context.buffer.length > 0 }
           ],
           on: {
             TYPE: {
-              target: "buffering",
-              actions: assign({
-                buffer: (context, event) => [...context.buffer, event.data],
-              }),
+              target: "debouncing",
+              actions: "bufferIfValidItem"
             },
           },
         },
@@ -49,10 +71,8 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
           ),
           on: {
             TYPE: {
-              target: "buffering",
-              actions: assign({
-                buffer: (context, event) => [...context.buffer, event.data],
-              }),
+              target: "debouncing",
+              actions: "bufferIfValidItem"
             },
           },
         },
@@ -71,9 +91,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
             TYPE: {
               internal: true,
               target: "buffering",
-              actions: assign({
-                buffer: (context, event) => [...context.buffer, event.data],
-              }),
+              actions: "bufferIfValidItem"
             },
           },
           invoke: {
@@ -84,12 +102,26 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
               body: context.current
             }),
             onDone: {
-              target: "iddle",
+              target: "saved",
               actions: assign({id: (context, event) => event.id})
             },
             onError: "error"
           },
         },
       },
-    });
-  }
+    },
+    {
+      actions: {
+        bufferIfValidItem: assign({
+          buffer: (context, event) => {
+            console.log('buffer if valid item', event.data, validation(event.data))
+            if(validation(event.data))
+              return [...context.buffer, event.data]
+            else
+              return [...context.buffer]
+          }
+        })
+      }
+    }
+  )
+}
