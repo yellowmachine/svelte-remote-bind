@@ -62,7 +62,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           ],
           on: {
             TYPE: {
-              target: "debouncing",
+              target: "iddle", //"debouncing",
               actions: "bufferIfValidItem"
             },
           },
@@ -74,7 +74,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           ),
           on: {
             TYPE: {
-              target: "debouncing",
+              target: "iddle", //"debouncing",
               actions: "bufferIfValidItem"
             },
           },
