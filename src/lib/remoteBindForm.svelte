@@ -17,21 +17,13 @@
     
     const { state, send } = useMachine(m);
     export let item;
-    let skip = true;
 
     const debouncedSend = debounce(send, T)
 
-    $:{
-        if(skip) {
-            skip = false
-            console.log('skip')
-        }
-        else if(validation(item)){
-            console.log('debounce item', item)
-            debouncedSend('TYPE', {data: item}) //send('TYPE', {data: item}) 
-        } 
+    $:if(validation(item)){
+        console.log('debounce item', item)
+        debouncedSend('TYPE', {data: item}) //send('TYPE', {data: item}) 
     } 
-    
 </script>
   
 <form>

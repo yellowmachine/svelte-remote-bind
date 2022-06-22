@@ -9,13 +9,22 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
 
     return createMachine({
       id: "remote-bind",
-      initial: "iddle",
+      initial: "ini",
       context: {
         id,
         buffer: [],
         current: "initial", //TODO: try to put null and pass tests
       },
       states: {
+        ini: {
+          entry: log(
+            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
+            'ini'
+          ),
+          on: {
+            TYPE: 'iddle'
+          }
+        },
         iddle: {
           entry: log(
             (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
