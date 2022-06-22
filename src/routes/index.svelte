@@ -1,7 +1,8 @@
-<script lang="ts">
+<script>
     import "../app.css";
-
-    import {register, RemoteForm} from '$lib';
+    import { setContext } from 'svelte';
+    
+    import { RemoteForm} from '$lib';
     import { create, test, enforce } from 'vest';
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -31,37 +32,46 @@
         returnCode = 400;
     }
 
-    let schema = {
-        fetch: async ({url, headers, method, body}) => {
+let endpoint = {
+        //default to fetch
+        fetch: async ({url, token, method, body}) => {
+            //mock fetch
             await sleep(2000)
             if(returnCode === 400)
                 throw "Error"
             else 
                 return {id: 1}
         },
+        debounceTime: 1000, //default to 1000
+        token: async () => "Bearer ABC", //default to null
         name: "endpoint",
-        baseUrl: "http://localhost/api",
+        baseUrl: "http://localhost:8080/api",
         entities: {
             cat: {
-                path: "/cat",
-                validation: (data) => suite(data).isValid(),
-                errors: (data) => suite(data),
-                key: "id"
+                path: "/cat", //default to ""
+                validation: (data) => suite(data).isValid(), //default to () => true
+                errors: (data) => suite(data), //default to () => ({})
+                key: "id" //default to "id", it can be a function like (data) => data['cat']['id']
             }
         }
     }
 
-    register(schema)
-    let cat = {name: 'fuffy', age: 1 } 
+setContext("machines", {
+	endpoint
+});
+
+let cat = {name: 'fuffy', age: 1 } 
 
 </script>
 
+<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Link to repo</a>
+
 <div>It's my cat ;)</div>
 
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:status let:verrors>
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
     Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
     Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    <div class={`${status}`}>Status: {status}</div>
+    <div class={`${state}`}>Status: {state}</div>
     <div>Errors: {JSON.stringify(verrors.tests)}</div>
 </RemoteForm>
 
@@ -80,20 +90,16 @@
         color: red;
     }
 
-    .initial{
+    .iddle{
         color: gray;
     }
 
-    .saving{
+    .buffering{
         color: orange;
     }
 
     .error{
         color: red;
-    }
-
-    .saved{
-        color: green;
     }
 
 </style>

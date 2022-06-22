@@ -1,5 +1,4 @@
-import { stream, register, fromSchema } from './bind'
-import { GQClient, RESTClient } from './clients'
-import RemoteForm from './RESTForm.svelte';
+import RemoteForm from './remoteBindForm.svelte'
+import { remoteMachineFactory } from './machine'
 
-export { RESTClient, GQClient, register, stream, fromSchema, RemoteForm }
+export { RemoteForm, remoteMachineFactory }
