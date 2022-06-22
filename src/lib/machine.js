@@ -1,4 +1,5 @@
-import { assign, createMachine } from 'xstate'
+import { assign, createMachine, actions } from 'xstate';
+const { log } = actions;
 
 export const remoteMachineFactory = ({ id=null, schema, entity}) => {
 
@@ -16,6 +17,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
       },
       states: {
         iddle: {
+          entry: log(
+            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
+            'iddle'
+          ),
           always: [
               { target: 'buffering', cond: (context) => context.buffer.length > 0 }
           ],
@@ -29,6 +34,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
           },
         },
         error: {
+          entry: log(
+            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
+            'error'
+          ),
           on: {
             TYPE: {
               target: "buffering",
@@ -39,10 +48,16 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
           },
         },
         buffering: {
-          entry: assign({
-            buffer: () => [],
-            current: (context) => context.buffer.at(-1),
-          }),
+          entry: [
+            log(
+              (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
+              'buffering'
+            ),
+            assign({
+              buffer: () => [],
+              current: (context) => context.buffer.at(-1),
+            })
+          ],
           on: {
             TYPE: {
               internal: true,
@@ -54,7 +69,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity}) => {
           },
           invoke: {
             src: async (context, event) => await myfetchv2({
-              url, 
+              url, //pass url/:id when PUT
               token: await token(), 
               method: context.id !== null ? 'PUT': 'POST', 
               body: context.current

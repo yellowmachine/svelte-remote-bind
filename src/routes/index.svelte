@@ -32,7 +32,7 @@
         returnCode = 400;
     }
 
-let machines = {
+let endpoint = {
         //default to fetch
         fetch: async ({url, token, method, body}) => {
             //mock fetch
@@ -57,7 +57,7 @@ let machines = {
     }
 
 setContext("machines", {
-	machines
+	endpoint
 });
 
 let cat = {name: 'fuffy', age: 1 } 
