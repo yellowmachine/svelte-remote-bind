@@ -31,7 +31,7 @@ Do you want to write some code like?
 
     });
 
-    let machines = {
+    let endpoint = {
         //default to fetch
         fetch: async ({url, headers, method, body, entitySchema}) => {
             //entitySchema is useful when doing a GraphQL query 
@@ -55,7 +55,7 @@ Do you want to write some code like?
     }
 
     setContext("machines", {
-        machines
+        endpoint
     });
 
     let cat = {name: 'fuffy', age: 1 } 

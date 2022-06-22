@@ -1,35 +1,36 @@
 <script lang="ts">
-    import {RemoteForm} from '../src/lib';
     import { setContext } from 'svelte';
+    import { RemoteForm} from '../src/lib';
 
-    let machines = {
+    let endpoint = {
         fetch,
-        token: async () => "Bearer ABC",
+        token: async () => "Bearer ABC", //default to null
         name: "endpoint",
         baseUrl: "http://localhost:8080/api",
         entities: {
             cat: {
-                path: "/cat",
-                validation: () => true,
-                errors: () => ({}),
-                key: "id"
+                path: "/cat", //default to ""
+                validation: (data) => true, //default to () => true
+                errors: (data) => ({}), //default to () => ({})
+                key: "id" //default to "id", it can be a function like (data) => data.cat.id if your are going to use it yourself in your custom fetch
             }
         }
     }
 
     setContext("machines", {
-        machines
+        endpoint
     });
-    
+
     let cat = {name: 'fuffy', age: 1 } 
 
 </script>
 
-<div>{cat.name}: It's my cat ;)</div>
+<div>It's my cat ;)</div>
 
 <RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
-    Name: <input id="name" type="text" bind:value={cat.name} />
-    Age: <input id="age" type="number" bind:value={cat.age} />
+    Name: <input type="text" bind:value={cat.name} />
+    Age: <input type="number" bind:value={cat.age} />
     <div>State: {state}</div>
-    <div>Errors: {JSON.stringify(verrors)}</div>
+    <div>Errors: {JSON.stringify(verrors.tests)}</div>
 </RemoteForm>
+

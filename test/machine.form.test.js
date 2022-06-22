@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import 'vi-fetch/setup';
 import { test, expect, beforeAll, beforeEach } from 'vitest';
-import { tick } from 'svelte';
 import { mockFetch, mockPost, prepareFetch } from 'vi-fetch';
 
 beforeAll(() => {
@@ -26,10 +25,10 @@ test('apples endpoint was called', async () => {
 
     const input = host.getElementsByTagName('input')[0];   
     input.setAttribute("value", "fooo")
-    await tick();
+    
     await expect(host.innerHTML).toContain("fooo");
 
-    await sleep(10);
-    await expect(host.innerHTML).toContain("saved");
+    await sleep(3000);
+    await expect(host.innerHTML).toContain("iddle");
 
 });
