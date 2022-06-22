@@ -1,11 +1,10 @@
 import { interpret } from "xstate";
 import { remoteMachineFactory } from '../../src/lib/machine';
 import schema from './schema';
-//import {jest} from '@jest/globals';
 import { it, expect, vi } from 'vitest';
 
 it('should reach initial from initial on TYPE', async () => {
-    //const myfetch = jest.fn(async x => x)    
+ 
     let resolve
     const promise = new Promise(_resolve => resolve = _resolve)
     const myfetch = vi.fn()
@@ -33,7 +32,6 @@ it('should reach initial from initial on TYPE', async () => {
 });
   
 it('should reach initial from initial on two TYPE', async () => {
-  //const myfetch = jest.fn()  
 
   let resolve
   const promise = new Promise(_resolve => resolve = _resolve)
@@ -61,7 +59,6 @@ it('should reach initial from initial on two TYPE', async () => {
           body: 'abc'
         });
         
-        //done()
         resolve()
       }
     })
