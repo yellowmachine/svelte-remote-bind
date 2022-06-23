@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import  userEvent from '@testing-library/user-event'
-import {render, fireEvent, screen, waitFor } from '@testing-library/svelte'
+import {render, screen, waitFor } from '@testing-library/svelte'
 
 let endpoint = {
     token: async () => "Bearer ABC", //default to null
@@ -23,14 +23,17 @@ test('changes button text on click', async () => {
     const user = userEvent.setup()
 
     const myfetch = jest.fn()
-    const {getByLabelText, getByText} = render(C, {endpoint: {...endpoint, fetch: myfetch}})
+
+    const {getByLabelText} = render(C, {endpoint: {...endpoint, fetch: myfetch}})
     const input = getByLabelText("my cat")
-    //const button = getByText('button')
-    //await fireEvent.click(button)
-    //await userEvent.type(input, 'foo')
     await user.type(input, 'foo')
-    //await fireEvent.change(input, {target: {value: 'foo'}})
-    //expect(input).toHaveValue('foo')
-    //expect(screen.getByTestId('my-test-id')).toHaveTextContent("It's my cat fuffy");
-    await waitFor(() => expect(screen.getByTestId('my-test-id')).toHaveTextContent("It's my cat fuffyfoo"))
+    await waitFor(() => expect(screen.getByTestId('my-test-id')).toHaveTextContent("It's my cat fuffyfoo"));
+    await waitFor(() => expect(screen.getByTestId('my-state-test-id')).toHaveTextContent("iddle")); //saved
+
+    expect(myfetch.mock.calls[0][0]).toMatchObject({
+        url: 'http://localhost:8080/api/cat',
+        method: 'POST',
+        token: 'Bearer ABC',
+        body: {name: 'fuffyfoo', age: 1}
+    });
 })
