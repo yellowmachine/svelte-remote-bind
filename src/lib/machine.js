@@ -39,7 +39,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             ],
           on: {
             FETCH: "buffering",
-            TYPE: "debouncing"
+            TYPE: {
+              actions: "bufferIfValidItem",
+              target: "debouncing" 
+            }
           }
         },
         saved: {
@@ -59,7 +62,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           ],
           on: {
             TYPE: {
-              target: "debouncing",
+              target: "iddle", //"debouncing",
               actions: "bufferIfValidItem"
             },
           },
@@ -71,7 +74,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           ),
           on: {
             TYPE: {
-              target: "debouncing",
+              target: "iddle", //"debouncing",
               actions: "bufferIfValidItem"
             },
           },

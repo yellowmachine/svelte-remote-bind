@@ -18,11 +18,11 @@
 
     $: {
         console.log('sending item', item)
-        send('TYPE', {data: item}) 
+        send('TYPE', {data: {...item}}) 
     }
     
 </script>
   
 <form>
-   <slot state={$state.value} verrors={errors(item)} />
+   <slot state={$state.value} verrors={errors({...item})} />
 </form>
