@@ -16,8 +16,8 @@
 		"testEnvironment": "jsdom"
 	},
 	"scripts": {
-		"jest": "jest test/machine.formv2.test.js",
-		"test": "vitest test/machine.form.test.js",
+		"testjest": "jest test/machine.formv2.test.js",
+		"testvitest": "vitest test/machine.interpret.test.js test/machine.transition.test.js",
 		"coverage": "vitest run --coverage",
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
