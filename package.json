@@ -16,7 +16,8 @@
 		"testEnvironment": "jsdom"
 	},
 	"scripts": {
-		"test": "run-s testjest testvitest",
+		"test": "jest ./test/",
+		"test-s": "run-s testjest testvitest",
 		"testjest": "jest test/machine.formv2.test.js",
 		"testvitest": "vitest test/machine.interpret.test.js test/machine.transition.test.js",
 		"coverage": "vitest run --coverage",

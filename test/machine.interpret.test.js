@@ -1,13 +1,10 @@
 import { interpret } from "xstate";
 import { remoteMachineFactory } from '../src/lib/machine';
 import schema from './schema';
-import { it, expect, vi } from 'vitest';
 
-it('should reach iddle from init on two TYPE', async () => {
+it('should reach iddle from init on two TYPE', (done) => {
  
-    let resolve
-    const promise = new Promise(_resolve => resolve = _resolve)
-    const myfetch = vi.fn()
+    const myfetch = jest.fn()
 
     const entity = 'cat';
     const validation = schema.entities.cat.validation;
@@ -26,22 +23,18 @@ it('should reach iddle from init on two TYPE', async () => {
             token: 'Bearer ABC',
             body: 'xyz'
           });
-          resolve()
+          done()
         }
       })
       .start();
 
     service.send('TYPE', {data: "ignore"});
     service.send('TYPE', {data: "xyz"});
-    await promise
 });
 
-
-it('should reach iddle from init on TYPE and debounce', async () => {
+it('should reach iddle from init on TYPE and debounce', (done) => {
  
-  let resolve
-  const promise = new Promise(_resolve => resolve = _resolve)
-  const myfetch = vi.fn()
+  const myfetch = jest.fn()
 
   const entity = 'cat';
   const validation = schema.entities.cat.validation;
@@ -60,7 +53,7 @@ it('should reach iddle from init on TYPE and debounce', async () => {
           token: 'Bearer ABC',
           body: 'xyz'
         });
-        resolve()
+        done()
       }
     })
     .start();
@@ -68,5 +61,4 @@ it('should reach iddle from init on TYPE and debounce', async () => {
   service.send('TYPE', {data: "ignore"});
   service.send('TYPE', {data: "abc debounced"});
   service.send('TYPE', {data: "xyz"});
-  await promise
 });
