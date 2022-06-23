@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 //import 'vi-fetch/setup';
+//import { tick } from 'svelte';
 import { test, expect, vi } from 'vitest';
 //import { mockFetch, mockPost, prepareFetch } from 'vi-fetch';
 
@@ -50,9 +51,10 @@ test('endpoint was called', async () => {
 
     const input = host.getElementsByTagName('input')[0];   
     input.setAttribute("value", "fooo")
-    
-    await expect(host.innerHTML).toContain("fooo");
 
+    await expect(host.innerHTML).toContain("It's my cat fooo");
+
+    /*
     await sleep(3000);
     await expect(host.innerHTML).toContain("iddle");
 
@@ -60,6 +62,7 @@ test('endpoint was called', async () => {
         url: 'http://localhost:8080/api/cat',
         method: 'POST',
         token: 'Bearer ABC',
-        body: {name: 'fuffy', age: 1}
+        body: {name: 'fooo', age: 1}
       });
+      */
 });
