@@ -16,8 +16,7 @@
 		"testEnvironment": "jsdom"
 	},
 	"scripts": {
-		"test-doesnot-work": "run-s testjest testvitest",
-		"test-not-workin-but-works-on-console": "node ./node_modules/npm-run-all/bin/run-s/index.js testjest testvitest",
+		"test": "run-s testjest testvitest",
 		"testjest": "jest test/machine.formv2.test.js",
 		"testvitest": "vitest test/machine.interpret.test.js test/machine.transition.test.js",
 		"coverage": "vitest run --coverage",
