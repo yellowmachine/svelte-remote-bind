@@ -13,7 +13,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
       context: {
         id,
         buffer: [],
-        current: "initial", //TODO: try to put null and pass tests
+        current: null,
       },
       states: {
         init: {
@@ -38,7 +38,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           })
             ],
           on: {
-            FETCH: "buffering",
+            FETCH: "fetching",
             TYPE: {
               actions: "bufferIfValidItem",
               target: "debouncing" 
@@ -79,11 +79,11 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             },
           },
         },
-        buffering: {
+        fetching: {
           entry: [
             log(
               (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-              'buffering'
+              'fetching'
             ),
             assign({
               buffer: () => [],
@@ -93,7 +93,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           on: {
             TYPE: {
               internal: true,
-              target: "buffering",
+              target: "fetching",
               actions: "bufferIfValidItem"
             },
           },
@@ -106,7 +106,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             }),
             onDone: {
               target: "saved",
-              actions: assign({id: (context, event) => event.id})
+              actions: [
+                log((context, event ) => console.log('event.data onDone', event.data), 'onDone'),
+                assign({id: (context, event) => event.data.id})
+              ]
             },
             onError: "error"
           },
