@@ -10,11 +10,13 @@ or
 yarn add svelte-remote-bind
 ```
 
-(this is a svelte-kit project, so, to see the demo working: yarn && yarn dev)
+(this is a svelte-kit project, so to see the demo working: yarn && yarn dev)
 
 [Demo](https://svelte-remote-bind.surge.sh)
 
-Do you want to write some code like this?
+The aim of this project is to bind a form to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: iddle, debouncing, fetching, error and saved.
+
+Would you like to write some code like this?
 
 ```js
 <script lang="ts">
