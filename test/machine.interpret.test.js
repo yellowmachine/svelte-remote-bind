@@ -19,6 +19,7 @@ it('should reach iddle from init on two TYPE', (done) => {
           expect(count).toBe(5)
           expect(myfetch.mock.calls[0][0]).toMatchObject({
             url: 'http://localhost:8080/api/cat',
+            id: null,
             method: 'POST',
             token: 'Bearer ABC',
             body: 'xyz'
@@ -52,6 +53,7 @@ it('should reach iddle from init on TYPE and debounce', (done) => {
         expect(myfetch.mock.calls[0][0]).toMatchObject({
           url: 'http://localhost:8080/api/cat',
           method: 'POST',
+          id: null,
           token: 'Bearer ABC',
           body: 'xyz'
         });

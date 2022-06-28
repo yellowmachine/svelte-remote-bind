@@ -11,15 +11,13 @@
     const schema = endpoints[name]
     
     const { validation, errors } = schema.entities[entity];
-    const m = remoteMachineFactory({id, schema, entity, validation});
+    const entitySchema = schema.entities[entity];
+    const m = remoteMachineFactory({id, schema, entity, validation, entitySchema});
     
     const { state, send } = useMachine(m);
     export let item;
 
-    $: {
-        console.log('sending item', item)
-        send('TYPE', {data: {...item}}) 
-    }
+    $: send('TYPE', {data: {...item}}) 
     
 </script>
   
