@@ -15,7 +15,7 @@ it('should reach iddle from init on two TYPE', (done) => {
     const service = interpret(m)
       .onTransition(state => {
         count++
-        if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== 'initial') {
+        if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== null) {
           expect(count).toBe(5)
           expect(myfetch.mock.calls[0][0]).toMatchObject({
             url: 'http://localhost:8080/api/cat',
@@ -45,7 +45,7 @@ it('should reach iddle from init on TYPE and debounce', (done) => {
   const service = interpret(m)
     .onTransition(state => {
       count++
-      if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== 'initial') {
+      if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== null) {
         expect(count).toBe(6)
         expect(myfetch.mock.calls[0][0]).toMatchObject({
           url: 'http://localhost:8080/api/cat',

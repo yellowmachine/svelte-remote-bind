@@ -94,7 +94,7 @@ let cat = {name: 'fuffy', age: 1 }
         color: gray;
     }
 
-    .buffering{
+    .fetching{
         color: orange;
     }
 
