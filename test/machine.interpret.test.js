@@ -42,8 +42,10 @@ it('should reach iddle from init on TYPE and debounce', (done) => {
   const m = remoteMachineFactory({schema: {...schema, fetch: myfetch}, entity, validation});
 
   let count = 0;
+  let states = []
   const service = interpret(m)
     .onTransition(state => {
+      states.push(state.value)
       count++
       if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== null) {
         expect(count).toBe(6)
@@ -53,6 +55,7 @@ it('should reach iddle from init on TYPE and debounce', (done) => {
           token: 'Bearer ABC',
           body: 'xyz'
         });
+        expect(states).toEqual(['init', 'iddle', 'debouncing', 'debouncing', 'fetching', 'iddle'])
         done()
       }
     })
@@ -61,4 +64,28 @@ it('should reach iddle from init on TYPE and debounce', (done) => {
   service.send('TYPE', {data: "ignore"});
   service.send('TYPE', {data: "abc debounced"});
   service.send('TYPE', {data: "xyz"});
+});
+
+it('should reach error from init', (done) => {
+ 
+  const myfetch = jest.fn(x => {throw 'Error'})
+
+  const entity = 'cat';
+  const validation = schema.entities.cat.validation;
+
+  const m = remoteMachineFactory({schema: {...schema, fetch: myfetch}, entity, validation});
+
+  let count = 0;
+  const service = interpret(m)
+    .onTransition(state => {
+      count++
+      if(state.matches("error")) {
+        expect(count).toBe(5)
+        done()
+      }
+    })
+    .start();
+
+  service.send('TYPE', {data: "ignore"});
+  service.send('TYPE', {data: "i want an error"});
 });
