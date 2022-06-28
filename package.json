@@ -1,6 +1,6 @@
 {
 	"name": "svelte-remote-bind",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": "Miguel Ángel Alarcos Torrecillas <yellow.machine@mailfence.com>",
 	"repository": {
         "type": "git",
