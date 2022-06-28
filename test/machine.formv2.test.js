@@ -32,6 +32,7 @@ test('changes button text on click', async () => {
 
     expect(myfetch.mock.calls[0][0]).toMatchObject({
         url: 'http://localhost:8080/api/cat',
+        id: null,
         method: 'POST',
         token: 'Bearer ABC',
         body: {name: 'fuffyfoo', age: 1}

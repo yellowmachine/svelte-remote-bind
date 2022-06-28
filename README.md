@@ -1,19 +1,25 @@
 # svelte-remote-bind
 
-### alert: this is a draft, there's still no beta npm package
+```bash
+npm i svelte-remote-bind
+```
 
-The actual implementation is with xstate.
+or
 
-(this is a svelte-kit project, so: npm i && npm run dev)
+```bash
+yarn add svelte-remote-bind
+```
+
+(this is a svelte-kit project, so, to see the demo working: yarn && yarn dev)
 
 [Demo](https://svelte-remote-bind.surge.sh)
 
-Do you want to write some code like?
+Do you want to write some code like this?
 
 ```js
 <script lang="ts">
     import { setContext } from 'svelte';
-    import { RemoteForm} from '$lib';
+    import { RemoteForm} from 'svelte-remote-bind';
     import { create, test, enforce } from 'vest';
 
     const suite = create((data = {}) => {
@@ -33,10 +39,11 @@ Do you want to write some code like?
 
     let endpoint = {
         //default to fetch
-        fetch: async ({url, headers, method, body, entitySchema}) => {
+        fetch: async ({id, url, headers, method, body, entitySchema}) => {
             //entitySchema is useful when doing a GraphQL query 
             //example:
             let query = method === 'POST' ? entitySchema.addQuery : entitySchema.updateQuery;
+            url = method === 'POST' ? url: url + '/' + id;
             const response = await GraphQLClient.fetch({url, query, headers, variables: body});
             return entitySchema.key(response)
         },
@@ -49,7 +56,7 @@ Do you want to write some code like?
                 path: "/cat", //default to ""
                 validation: (data) => suite(data).isValid(), //default to () => true
                 errors: (data) => suite(data), //default to () => ({})
-                key: "id" //default to "id", it can be a function like (data) => data.cat.id if your are going to use it yourself in your custom fetch
+                key: (data) => data.cat.id //default to "id"
             }
         }
     }
@@ -70,4 +77,12 @@ Do you want to write some code like?
     <div class={`${state}`}>State: {state}</div>
     <div>Errors: {JSON.stringify(verrors.tests)}</div>
 </RemoteForm>
+```
+
+Implementation: The actual implementation is with xstate.
+
+To run tests:
+
+```bash
+yarn test
 ```
