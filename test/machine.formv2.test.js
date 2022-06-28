@@ -22,7 +22,7 @@ import C from './C.svelte';
 test('changes button text on click', async () => {
     const user = userEvent.setup()
 
-    const myfetch = jest.fn()
+    const myfetch = jest.fn( x => ({data: {id: 3}}))
 
     const {getByLabelText} = render(C, {endpoint: {...endpoint, fetch: myfetch}})
     const input = getByLabelText("my cat")

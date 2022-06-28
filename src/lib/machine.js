@@ -106,7 +106,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             }),
             onDone: {
               target: "saved",
-              actions: assign({id: (context, event) => event.id})
+              actions: [
+                log((context, event ) => console.log('event.data onDone', event.data), 'onDone'),
+                assign({id: (context, event) => event.data.id})
+              ]
             },
             onError: "error"
           },

@@ -4,7 +4,7 @@ import schema from './schema';
 
 it('should reach iddle from init on two TYPE', (done) => {
  
-    const myfetch = jest.fn()
+    const myfetch = jest.fn( x => ({data: {id: 3}}))
 
     const entity = 'cat';
     const validation = schema.entities.cat.validation;
@@ -34,7 +34,7 @@ it('should reach iddle from init on two TYPE', (done) => {
 
 it('should reach iddle from init on TYPE and debounce', (done) => {
  
-  const myfetch = jest.fn()
+  const myfetch = jest.fn( x => ({data: {id: 3}}))
 
   const entity = 'cat';
   const validation = schema.entities.cat.validation;
@@ -74,13 +74,14 @@ it('should reach error from init', (done) => {
   const validation = schema.entities.cat.validation;
 
   const m = remoteMachineFactory({schema: {...schema, fetch: myfetch}, entity, validation});
-
+  let states = [];
   let count = 0;
   const service = interpret(m)
     .onTransition(state => {
+      states.push(state.value)
       count++
       if(state.matches("error")) {
-        expect(count).toBe(5)
+        expect(states).toEqual(['init', 'iddle', 'debouncing', 'fetching', 'error'])
         done()
       }
     })
