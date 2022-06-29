@@ -1,4 +1,8 @@
-on: 
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level' 
   push:
     branches:    
       - master
