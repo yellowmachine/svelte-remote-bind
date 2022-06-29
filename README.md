@@ -18,6 +18,15 @@ The aim of this project is to bind a form to a remote endpoint so a POST or PUT 
 
 Would you like to write some code like this?
 
+```svelte
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
+    Name: <input type="text" bind:value={cat.name} />
+    Age: <input type="number" bind:value={cat.age} />
+</RemoteForm>
+```
+
+Full example:
+
 ```js
 <script lang="ts">
     import { setContext } from 'svelte';
