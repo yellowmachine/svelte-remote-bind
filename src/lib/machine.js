@@ -99,7 +99,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           },
           invoke: {
             src: async (context, event) => await myfetchv2({
-              url,
+              url: context.id !== null ? url + '/' + context.id : url,
               id: context.id,
               token: await token(), 
               method: context.id !== null ? 'PUT': 'POST', 

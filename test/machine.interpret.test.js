@@ -92,3 +92,34 @@ it('should reach error from init', (done) => {
   service.send('TYPE', {data: "ignore"});
   service.send('TYPE', {data: "i want an error"});
 });
+
+it('should reach iddle from init on two TYPE and it is a PUT', (done) => {
+ 
+  const myfetch = jest.fn( x => ({data: {id: 3}}))
+
+  const entity = 'cat';
+  const validation = schema.entities.cat.validation;
+
+  const m = remoteMachineFactory({ id: 1, schema: {...schema, fetch: myfetch}, entity, validation});
+
+  let count = 0;
+  const service = interpret(m)
+    .onTransition(state => {
+      count++
+      if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== null) {
+        expect(count).toBe(5)
+        expect(myfetch.mock.calls[0][0]).toMatchObject({
+          url: 'http://localhost:8080/api/cat/1',
+          id: 1,
+          method: 'PUT',
+          token: 'Bearer ABC',
+          body: 'xyz'
+        });
+        done()
+      }
+    })
+    .start();
+
+  service.send('TYPE', {data: "ignore"});
+  service.send('TYPE', {data: "xyz"});
+});
