@@ -13,6 +13,8 @@ jobs:
           node-version: 16
       - run: yarn
       - run: yarn test
+      - run: yarn package
       - uses: JS-DevTools/npm-publish@v1
         with:
+          package: ./package/package.json
           token: ${{ secrets.NPM_TOKEN }}
