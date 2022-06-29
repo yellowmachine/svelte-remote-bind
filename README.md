@@ -53,18 +53,20 @@ Full example:
         fetch: async ({id, url, headers, method, body, entitySchema}) => {
             //entitySchema is useful when doing a GraphQL query 
             //example:
-            let query = method === 'POST' ? entitySchema.addQuery : entitySchema.updateQuery;
-            url = method === 'POST' ? url: url + '/' + id;
-            const response = await GraphQLClient.fetch({url, query, headers, variables: body});
+            const query = method === 'POST' ? entitySchema.addQuery : entitySchema.updateQuery;
+            const variables = // create with id and body
+            const response = await GraphQLClient.fetch({url, query, headers, variables});
             return entitySchema.key(response)
         },
         debounceTime: 1000, //default to 1000
         token: async () => "Bearer ABC", //default to null
         name: "endpoint",
-        baseUrl: "http://localhost:8080/api",
+        baseUrl: "https://my-backend/api",
         entities: {
             cat: {
                 path: "/cat", //default to ""
+                addQuery: ...,
+                updateQuery: ...,
                 validation: (data) => suite(data).isValid(), //default to () => true
                 errors: (data) => suite(data), //default to () => ({})
                 key: (data) => data.cat.id //default to "id"
