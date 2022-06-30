@@ -10,7 +10,7 @@
 
     let cat = {name: 'fuffy', age: 1 }
     
-    const {state, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+    const {state, flush, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
 
     $: updateMyCat(cat)
 
@@ -18,4 +18,5 @@
 
 <button on:click={() => cat.age++}>age++</button>
 <div data-testid="my-state-test-id">State: {$state.value}, age: {cat.age}</div>
+<button on:click={flush}>flush</button>
 

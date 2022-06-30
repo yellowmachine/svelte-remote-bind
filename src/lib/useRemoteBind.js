@@ -16,6 +16,7 @@ export default function useRemoteBind({id=null, bind}){
     return {
         state,
         errors,
+        flush: () => send('FLUSH'),
         update: (item) => send('TYPE', {data: item})
     }
 }

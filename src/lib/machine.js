@@ -17,20 +17,20 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
       },
       states: {
         init: {
-          entry: log(
+          /*entry: log(
             (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
             'init'
-          ),
+          ),*/
           on: {
             TYPE: 'idle'
           }
         },
         debouncing: {
           entry: [
-            log(
-            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'debouncing'
-          ),
+            //log(
+            //(context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
+            //'debouncing'
+          //),
           cancel('debouncing'),
           send("FETCH", {
             delay: 1000,
@@ -38,6 +38,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           })
             ],
           on: {
+            FLUSH: {
+              actions: cancel('debouncing'),
+              target: 'fetching'
+            },
             FETCH: "fetching",
             TYPE: {
               actions: "bufferIfValidItem",
@@ -46,17 +50,17 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           }
         },
         saved: {
-          entry: log(
+          /*entry: log(
             (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
             'saved'
-          ),
+          ),*/
           always: "idle"
         },
         idle: {
-          entry: log(
+          /*entry: log(
             (context, event) => `buffer.length: ${context.buffer.length} current: ${context.current}, event: ${JSON.stringify(event)}`,
             'idle'
-          ),
+          ),*/
           always: [
               { target: 'debouncing', cond: (context) => context.buffer.length > 0 }
           ],
@@ -68,23 +72,23 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           },
         },
         error: {
-          entry: log(
+          /*entry: log(
             (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
             'error'
-          ),
+          ),*/
           on: {
             TYPE: {
-              target: "idle", //"debouncing",
+              target: "idle",
               actions: "bufferIfValidItem"
             },
           },
         },
         fetching: {
           entry: [
-            log(
+            /*log(
               (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
               'fetching'
-            ),
+            ),*/
             assign({
               buffer: () => [],
               current: (context) => context.buffer.at(-1),
@@ -108,7 +112,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             onDone: {
               target: "saved",
               actions: [
-                log((context, event ) => console.log('event.data onDone', event.data), 'onDone'),
+                //log((context, event ) => console.log('event.data onDone', event.data), 'onDone'),
                 assign({id: (context, event) => event.data.id})
               ]
             },
@@ -121,7 +125,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
       actions: {
         bufferIfValidItem: assign({
           buffer: (context, event) => {
-            console.log('buffer if valid item', event.data, validation(event.data))
+            //console.log('buffer if valid item', event.data, validation(event.data))
             if(validation(event.data))
               return [...context.buffer, event.data]
             else
