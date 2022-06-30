@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import {render, waitFor, screen } from '@testing-library/svelte'
+import { flush } from 'svelte/internal';
 
 let endpoint = {
     token: async () => "Bearer ABC", //default to null
@@ -22,9 +23,29 @@ test('changes age on button click', async () => {
 
     const myfetch = jest.fn( x => ({data: {id: 3}}))
 
-    const {getByRole} = render(D, {endpoint: {...endpoint, fetch: myfetch}})
-    const button = getByRole("button")
+    const {getAllByRole} = render(D, {endpoint: {...endpoint, fetch: myfetch}})
+    const button = getAllByRole("button")[0]
     await button.click()
+    await waitFor(() => expect(screen.getByTestId('my-state-test-id')).toHaveTextContent("idle")); //saved
+
+    expect(myfetch.mock.calls[0][0]).toMatchObject({
+        url: 'http://localhost:8080/api/cat',
+        id: null,
+        method: 'POST',
+        token: 'Bearer ABC',
+        body: {name: 'fuffy', age: 2}
+    });
+})
+
+test('changes age on button click and flush', async () => {
+
+    const myfetch = jest.fn( x => ({data: {id: 3}}))
+
+    const {getAllByRole} = render(D, {endpoint: {...endpoint, fetch: myfetch}})
+    const button = getAllByRole("button")[0]
+    const flush = getAllByRole("button")[1]
+    await button.click()
+    await flush.click()
     await waitFor(() => expect(screen.getByTestId('my-state-test-id')).toHaveTextContent("idle")); //saved
 
     expect(myfetch.mock.calls[0][0]).toMatchObject({
