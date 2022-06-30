@@ -14,7 +14,7 @@ yarn add svelte-remote-bind
 
 [Demo](https://svelte-remote-bind.surge.sh)
 
-The aim of this project is to bind a form to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: iddle, debouncing, fetching, error and saved.
+The aim of this project is to bind a form to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: idle, debouncing, fetching, error and saved.
 
 Would you like to write some code like this?
 
@@ -30,9 +30,17 @@ or
 ```svelte
 let cat = {name: 'fuffy', age: 1 } 
 
-const {state, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+const {state, flush, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
 
 $: updateMyCat(cat)
+
+<div>
+    Name: <input type="text" bind:value={cat.name} />
+    Age: <input type="number" bind:value={cat.age} />
+    {#if $state.value === 'debouncing'}
+        <button on:click={flush}>Save!</button>
+    {/if}
+</div>
 ```
 
 
