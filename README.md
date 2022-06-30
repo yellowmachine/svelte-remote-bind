@@ -113,7 +113,7 @@ Full example:
 
 Implementation: The actual implementation is with xstate.
 
-![machine](https://stately.ai/registry/machines/f439b6a7-9ede-4efc-96f7-6f34acc4261f.png)
+![state machine](./machine.png)
 
 To run tests:
 
