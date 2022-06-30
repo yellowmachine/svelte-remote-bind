@@ -56,7 +56,7 @@ let endpoint = {
         }
     }
 
-setContext("machines", {
+setContext("remoteBindEndpoints", {
 	endpoint
 });
 

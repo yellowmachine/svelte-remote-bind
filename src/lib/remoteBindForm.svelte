@@ -6,7 +6,7 @@
     export let id = null;
     export let remoteBind;
 
-    const endpoints = getContext('machines')
+    const endpoints = getContext('remoteBindEndpoints')
     const [name, entity] = remoteBind.split(':');
     const schema = endpoints[name]
     const debounceTime = schema.debounceTime;
