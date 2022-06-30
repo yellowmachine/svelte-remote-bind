@@ -1,7 +1,7 @@
 import { assign, createMachine, actions } from 'xstate';
 const { log, cancel, send } = actions;
 
-export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => {
+export const remoteMachineFactory = ({ id=null, schema, entity, validation, debounceTime=1000}) => {
 
     const myfetchv2 = schema.fetch
     const url = schema.baseUrl + schema.entities[entity].path
@@ -33,13 +33,13 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           //),
           cancel('debouncing'),
           send("FETCH", {
-            delay: 1000,
+            delay: debounceTime,
             id: "debouncing"
           })
             ],
           on: {
             FLUSH: {
-              actions: cancel('debouncing'),
+              actions: [cancel('debouncing'), log()] ,
               target: 'fetching'
             },
             FETCH: "fetching",

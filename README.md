@@ -30,9 +30,17 @@ or
 ```svelte
 let cat = {name: 'fuffy', age: 1 } 
 
-const {state, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+const {state, flush, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
 
 $: updateMyCat(cat)
+
+<div>
+    Name: <input type="text" bind:value={cat.name} />
+    Age: <input type="number" bind:value={cat.age} />
+    {#if $state.value === 'debouncing'}
+        <button on:click={flush}>Save!</button>
+    {/if}
+</div>
 ```
 
 

@@ -42,7 +42,7 @@ let endpoint = {
             else 
                 return {id: 1}
         },
-        debounceTime: 1000, //default to 1000
+        debounceTime: 3000, //default to 1000
         token: async () => "Bearer ABC", //default to null
         name: "endpoint",
         baseUrl: "http://localhost:8080/api",
@@ -62,7 +62,7 @@ setContext("machines", {
 
 let cat = {name: 'fuffy', age: 1 } 
 
-const {state, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+const {state, flush, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
 
 $: updateMyCat(cat)
 
@@ -70,12 +70,18 @@ $: updateMyCat(cat)
 
 <a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Link to repo</a>
 
+<div class="alert">(debounce time is 3 seconds)</div>
+
 <div>It's my cat ;)</div>
 
 <div>
     Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
     Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
     <div class={`${$state.value}`}>Status: {$state.value}</div>
+    {#if $state.value === 'debouncing'}
+        <button class="btn btn-success" on:click={flush}>Save!</button>
+    {/if}
+    <p />
     <div>Errors: {JSON.stringify(errors(cat).tests)}</div>
 </div>
 
@@ -103,6 +109,10 @@ $: updateMyCat(cat)
     }
 
     .error{
+        color: red;
+    }
+
+    .alert{
         color: red;
     }
 
