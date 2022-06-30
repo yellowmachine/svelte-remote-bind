@@ -27,7 +27,7 @@ Would you like to write some code like this?
 
 Full example:
 
-```js
+```svelte
 <script lang="ts">
     import { setContext } from 'svelte';
     import { RemoteForm} from 'svelte-remote-bind';
@@ -101,3 +101,6 @@ To run tests:
 ```bash
 yarn test
 ```
+
+### Contributors
+
