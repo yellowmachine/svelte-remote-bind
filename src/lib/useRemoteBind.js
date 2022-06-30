@@ -3,7 +3,7 @@ import { useMachine } from '@xstate/svelte';
 import { getContext } from 'svelte';
 
 export default function useRemoteBind({id=null, bind}){
-    const endpoints = getContext('machines')
+    const endpoints = getContext('remoteBindEndpoints')
     const [name, entity] = bind.split(':');
     const schema = endpoints[name]
     const debounceTime = schema.debounceTime;

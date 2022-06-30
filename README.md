@@ -93,7 +93,7 @@ Full example:
         }
     }
 
-    setContext("machines", {
+    setContext("remoteBindEndpoints", {
         endpoint
     });
 

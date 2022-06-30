@@ -3,7 +3,7 @@
     import { RemoteForm} from '../src/lib';
     export let endpoint;
 
-    setContext("machines", {
+    setContext("remoteBindEndpoints", {
         endpoint
     });
 
