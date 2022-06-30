@@ -30,7 +30,7 @@ or
 ```svelte
 let cat = {name: 'fuffy', age: 1 } 
 
-const {state, flush, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+const {state, flush, errors, update: updateMyCat} = useRemoteBind({id: 3, bind: 'endpoint:cat'})
 
 $: updateMyCat(cat)
 
