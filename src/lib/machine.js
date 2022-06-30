@@ -22,7 +22,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             'init'
           ),
           on: {
-            TYPE: 'iddle'
+            TYPE: 'idle'
           }
         },
         debouncing: {
@@ -50,19 +50,19 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
             (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
             'saved'
           ),
-          always: "iddle"
+          always: "idle"
         },
-        iddle: {
+        idle: {
           entry: log(
             (context, event) => `buffer.length: ${context.buffer.length} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'iddle'
+            'idle'
           ),
           always: [
               { target: 'debouncing', cond: (context) => context.buffer.length > 0 }
           ],
           on: {
             TYPE: {
-              target: "iddle", //"debouncing",
+              target: "idle", //"debouncing",
               actions: "bufferIfValidItem"
             },
           },
@@ -74,7 +74,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation}) => 
           ),
           on: {
             TYPE: {
-              target: "iddle", //"debouncing",
+              target: "idle", //"debouncing",
               actions: "bufferIfValidItem"
             },
           },

@@ -25,7 +25,7 @@ test('changes age on button click', async () => {
     const {getByRole} = render(D, {endpoint: {...endpoint, fetch: myfetch}})
     const button = getByRole("button")
     await button.click()
-    await waitFor(() => expect(screen.getByTestId('my-state-test-id')).toHaveTextContent("iddle")); //saved
+    await waitFor(() => expect(screen.getByTestId('my-state-test-id')).toHaveTextContent("idle")); //saved
 
     expect(myfetch.mock.calls[0][0]).toMatchObject({
         url: 'http://localhost:8080/api/cat',

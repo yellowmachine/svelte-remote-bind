@@ -94,7 +94,7 @@ $: updateMyCat(cat)
         color: red;
     }
 
-    .iddle{
+    .idle{
         color: gray;
     }
 

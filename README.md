@@ -14,7 +14,7 @@ yarn add svelte-remote-bind
 
 [Demo](https://svelte-remote-bind.surge.sh)
 
-The aim of this project is to bind a form to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: iddle, debouncing, fetching, error and saved.
+The aim of this project is to bind a form to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: idle, debouncing, fetching, error and saved.
 
 Would you like to write some code like this?
 
