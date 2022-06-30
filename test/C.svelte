@@ -13,11 +13,11 @@
 
 <div data-testid="my-test-id">It's my cat {cat.name}</div>
 
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors>
     <label for="cat-name">my cat</label>
     Name: <input id="cat-name" type="text" bind:value={cat.name} />
     Age: <input type="number" bind:value={cat.age} />
     <div data-testid="my-state-test-id">State: {state}</div>
-    <div>Errors: {JSON.stringify(verrors.tests)}</div>
+    <div>Errors: {JSON.stringify(errors.tests)}</div>
 </RemoteForm>
 

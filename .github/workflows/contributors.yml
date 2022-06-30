@@ -1,5 +1,9 @@
 name: Add contributors
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
   schedule:
     - cron:  '20 20 * * *'
 # push:

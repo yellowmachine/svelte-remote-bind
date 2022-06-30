@@ -19,7 +19,7 @@ The aim of this project is to bind a form to a remote endpoint so a POST or PUT 
 Would you like to write some code like this?
 
 ```svelte
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors>
     Name: <input type="text" bind:value={cat.name} />
     Age: <input type="number" bind:value={cat.age} />
 </RemoteForm>
@@ -103,11 +103,12 @@ Full example:
 
 <div>It's my cat ;)</div>
 
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors let:flush>
+<!--id is optional, defaults to null -->
+<RemoteForm id={3} remoteBind="endpoint:cat" bind:item={cat} let:state let:errors let:flush>
     Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
     Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    <div class={`${state}`}>State: {state}</div>
-    <div>Errors: {JSON.stringify(verrors.tests)}</div>
+    <div>State: {state}</div>
+    <div>Errors: {JSON.stringify(errors.tests)}</div>
 </RemoteForm>
 ```
 
