@@ -1,4 +1,5 @@
 import RemoteForm from './remoteBindForm.svelte'
 import { remoteMachineFactory } from './machine'
+import useRemoteBind from './useRemoteBind'
 
-export { RemoteForm, remoteMachineFactory }
+export { useRemoteBind, RemoteForm, remoteMachineFactory }

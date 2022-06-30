@@ -25,9 +25,20 @@ Would you like to write some code like this?
 </RemoteForm>
 ```
 
+or
+
+```svelte
+let cat = {name: 'fuffy', age: 1 } 
+
+const {state, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+
+$: updateMyCat(cat)
+```
+
+
 Full example:
 
-```js
+```svelte
 <script lang="ts">
     import { setContext } from 'svelte';
     import { RemoteForm} from 'svelte-remote-bind';
@@ -101,3 +112,6 @@ To run tests:
 ```bash
 yarn test
 ```
+
+### Contributors
+

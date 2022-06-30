@@ -2,7 +2,7 @@
     import "../app.css";
     import { setContext } from 'svelte';
     
-    import { RemoteForm} from '$lib';
+    import { useRemoteBind } from '$lib';
     import { create, test, enforce } from 'vest';
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -62,24 +62,22 @@ setContext("machines", {
 
 let cat = {name: 'fuffy', age: 1 } 
 
+const {state, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+
+$: updateMyCat(cat)
+
 </script>
-
-<a class="link" href="/useremotebind">Go to useRemoteBind page</a>
-
-<p/>
 
 <a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Link to repo</a>
 
-<p/>
-
 <div>It's my cat ;)</div>
 
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
+<div>
     Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
     Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    <div class={`${state}`}>Status: {state}</div>
-    <div>Errors: {JSON.stringify(verrors.tests)}</div>
-</RemoteForm>
+    <div class={`${$state.value}`}>Status: {$state.value}</div>
+    <div>Errors: {JSON.stringify(errors(cat).tests)}</div>
+</div>
 
 <div>
     <div class={returnCode === 200 ? 'success': 'failed'}>return code: {returnCode}</div>
