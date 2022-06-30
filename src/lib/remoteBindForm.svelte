@@ -23,5 +23,5 @@
 </script>
   
 <form>
-   <slot flush={() => send('FLUSH')} state={$state.value} verrors={errors(item)} />
+   <slot flush={() => send('FLUSH')} state={$state.value} errors={errors(item)} />
 </form>
