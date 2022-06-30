@@ -25,6 +25,17 @@ Would you like to write some code like this?
 </RemoteForm>
 ```
 
+or
+
+```svelte
+let cat = {name: 'fuffy', age: 1 } 
+
+const {state, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
+
+$: updateMyCat(cat)
+```
+
+
 Full example:
 
 ```svelte
