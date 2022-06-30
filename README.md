@@ -113,7 +113,7 @@ Full example:
 
 Implementation: The actual implementation is with xstate.
 
-<iframe src="https://stately.ai/viz/embed/f439b6a7-9ede-4efc-96f7-6f34acc4261f?mode=viz&panel=code&showOriginalLink=1&readOnly=1&pan=1&zoom=1&controls=1" sandbox="allow-same-origin allow-scripts"></iframe>
+![machine](https://stately.ai/registry/machines/f439b6a7-9ede-4efc-96f7-6f34acc4261f.png)
 
 To run tests:
 
