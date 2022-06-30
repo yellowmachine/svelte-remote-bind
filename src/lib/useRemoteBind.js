@@ -2,7 +2,7 @@ import { remoteMachineFactory } from './machine'
 import { useMachine } from '@xstate/svelte';
 import { getContext } from 'svelte';
 
-export default function useRemoteBind({id, bind}){
+export default function useRemoteBind({id=null, bind}){
     const endpoints = getContext('machines')
     const [name, entity] = bind.split(':');
     const schema = endpoints[name]
