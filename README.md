@@ -103,7 +103,7 @@ Full example:
 
 <div>It's my cat ;)</div>
 
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors>
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:verrors let:flush>
     Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
     Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
     <div class={`${state}`}>State: {state}</div>
@@ -113,7 +113,7 @@ Full example:
 
 Implementation: The actual implementation is with xstate.
 
-![machine](https://stately.ai/registry/machines/f439b6a7-9ede-4efc-96f7-6f34acc4261f.png)
+<iframe src="https://stately.ai/viz/embed/f439b6a7-9ede-4efc-96f7-6f34acc4261f?mode=viz&panel=code&showOriginalLink=1&readOnly=1&pan=1&zoom=1&controls=1" sandbox="allow-same-origin allow-scripts"></iframe>
 
 To run tests:
 
