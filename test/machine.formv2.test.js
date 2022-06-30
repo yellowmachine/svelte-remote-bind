@@ -28,7 +28,7 @@ test('changes button text on click', async () => {
     const input = getByLabelText("my cat")
     await user.type(input, 'foo')
     await waitFor(() => expect(screen.getByTestId('my-test-id')).toHaveTextContent("It's my cat fuffyfoo"));
-    await waitFor(() => expect(screen.getByTestId('my-state-test-id')).toHaveTextContent("iddle")); //saved
+    await waitFor(() => expect(screen.getByTestId('my-state-test-id')).toHaveTextContent("idle")); //saved
 
     expect(myfetch.mock.calls[0][0]).toMatchObject({
         url: 'http://localhost:8080/api/cat',

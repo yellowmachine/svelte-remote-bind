@@ -96,7 +96,7 @@ let cat = {name: 'fuffy', age: 1 }
         color: red;
     }
 
-    .iddle{
+    .idle{
         color: gray;
     }
 

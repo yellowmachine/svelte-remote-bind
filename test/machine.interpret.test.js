@@ -2,7 +2,7 @@ import { interpret } from "xstate";
 import { remoteMachineFactory } from '../src/lib/machine';
 import schema from './schema';
 
-it('should reach iddle from init on two TYPE', (done) => {
+it('should reach idle from init on two TYPE', (done) => {
  
     const myfetch = jest.fn( x => ({data: {id: 3}}))
 
@@ -15,7 +15,7 @@ it('should reach iddle from init on two TYPE', (done) => {
     const service = interpret(m)
       .onTransition(state => {
         count++
-        if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== null) {
+        if(state.matches("idle") && state.context.buffer.length === 0 && state.context.current !== null) {
           expect(count).toBe(5)
           expect(myfetch.mock.calls[0][0]).toMatchObject({
             url: 'http://localhost:8080/api/cat',
@@ -33,7 +33,7 @@ it('should reach iddle from init on two TYPE', (done) => {
     service.send('TYPE', {data: "xyz"});
 });
 
-it('should reach iddle from init on TYPE and debounce', (done) => {
+it('should reach idle from init on TYPE and debounce', (done) => {
  
   const myfetch = jest.fn( x => ({data: {id: 3}}))
 
@@ -48,7 +48,7 @@ it('should reach iddle from init on TYPE and debounce', (done) => {
     .onTransition(state => {
       states.push(state.value)
       count++
-      if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== null) {
+      if(state.matches("idle") && state.context.buffer.length === 0 && state.context.current !== null) {
         expect(count).toBe(6)
         expect(myfetch.mock.calls[0][0]).toMatchObject({
           url: 'http://localhost:8080/api/cat',
@@ -57,7 +57,7 @@ it('should reach iddle from init on TYPE and debounce', (done) => {
           token: 'Bearer ABC',
           body: 'xyz'
         });
-        expect(states).toEqual(['init', 'iddle', 'debouncing', 'debouncing', 'fetching', 'iddle'])
+        expect(states).toEqual(['init', 'idle', 'debouncing', 'debouncing', 'fetching', 'idle'])
         done()
       }
     })
@@ -83,7 +83,7 @@ it('should reach error from init', (done) => {
       states.push(state.value)
       count++
       if(state.matches("error")) {
-        expect(states).toEqual(['init', 'iddle', 'debouncing', 'fetching', 'error'])
+        expect(states).toEqual(['init', 'idle', 'debouncing', 'fetching', 'error'])
         done()
       }
     })
@@ -93,7 +93,7 @@ it('should reach error from init', (done) => {
   service.send('TYPE', {data: "i want an error"});
 });
 
-it('should reach iddle from init on two TYPE and it is a PUT', (done) => {
+it('should reach idle from init on two TYPE and it is a PUT', (done) => {
  
   const myfetch = jest.fn( x => ({data: {id: 3}}))
 
@@ -106,7 +106,7 @@ it('should reach iddle from init on two TYPE and it is a PUT', (done) => {
   const service = interpret(m)
     .onTransition(state => {
       count++
-      if(state.matches("iddle") && state.context.buffer.length === 0 && state.context.current !== null) {
+      if(state.matches("idle") && state.context.buffer.length === 0 && state.context.current !== null) {
         expect(count).toBe(5)
         expect(myfetch.mock.calls[0][0]).toMatchObject({
           url: 'http://localhost:8080/api/cat/1',
