@@ -31,7 +31,7 @@ const { update} = useRemoteBind({id: 1, bind: 'endpoint:person'})
 $: update(person)
 </script>
 
-<Cat added={addCat} />
+<Cat onCreated={addCat} />
 
 <div>
     <span>Cats of yellow man:</span>
@@ -48,11 +48,11 @@ $: update(person)
 ```svelte
 // cat.svelte
 <script>
-export let added;
+export let onCreated;
 
 let cat = {name: '', age: 1 } 
 
-const {state, flush, errors, update, reset} = useRemoteBind({added, bind: 'endpoint:cat'})
+const {state, flush, errors, update, reset} = useRemoteBind({onCreated, bind: 'endpoint:cat'})
 
 $: update(cat)
 </script>

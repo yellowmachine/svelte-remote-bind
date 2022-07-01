@@ -2,7 +2,7 @@
     import { useRemoteBind } from '$lib';
     import { create, test, enforce } from 'vest';
     
-    export let added;
+    export let onCreated;
 
     const suite = create((data = {}) => {
         test('name', 'Name is required', () => {
@@ -21,7 +21,7 @@
 
     let cat = {name: '', age: 1 } 
 
-    const {state, flush, update, reset} = useRemoteBind({added, bind: 'endpoint:cat'})
+    const {state, flush, update, reset} = useRemoteBind({onCreated, bind: 'endpoint:cat'})
 
     $: update(cat)
 </script>

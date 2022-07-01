@@ -1,7 +1,7 @@
 import { assign, createMachine, actions } from 'xstate';
 const { cancel, send } = actions;
 
-export const remoteMachineFactory = ({ added=()=>{}, id=null, schema, entity, validation, debounceTime=1000}) => {
+export const remoteMachineFactory = ({ onCreated=()=>{}, id=null, schema, entity, validation, debounceTime=1000}) => {
 
     const myfetchv2 = schema.fetch
     const url = schema.baseUrl + schema.entities[entity].path
@@ -97,7 +97,7 @@ export const remoteMachineFactory = ({ added=()=>{}, id=null, schema, entity, va
               target: "saved",
               actions: [
                 assign({id: (context, event) => {
-                  if(context.id === null) added({...context.current, id: event.data.id})
+                  if(context.id === null) onCreated({...context.current, id: event.data.id})
                   return event.data.id
                 }})
               ]

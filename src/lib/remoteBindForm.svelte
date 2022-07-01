@@ -13,8 +13,8 @@
     
     const { validation, errors } = schema.entities[entity];
     const entitySchema = schema.entities[entity];
-    const added = entitySchema.added;
-    const m = remoteMachineFactory({ added, id, schema, entity, validation, entitySchema, debounceTime});
+    const onCreated = entitySchema.onCreated;
+    const m = remoteMachineFactory({ onCreated, id, schema, entity, validation, entitySchema, debounceTime});
     
     const { state, send } = useMachine(m);
     export let item;

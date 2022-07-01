@@ -13,7 +13,7 @@
     $: update(person)
 </script>
 
-<Cat added={addCat} />
+<Cat onCreated={addCat} />
 
 <div>
     <span>Id cats of yellow man:</span>
