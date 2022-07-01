@@ -1,16 +1,6 @@
 # svelte-remote-bind
 
-```bash
-npm i svelte-remote-bind
-```
-
-or
-
-```bash
-yarn add svelte-remote-bind
-```
-
-(this is a svelte-kit project, so to see the demo working: yarn && yarn dev)
+This is a svelte-kit project, so to see the demo working: ```yarn dev```.
 
 [Demo](https://svelte-remote-bind.surge.sh)
 
@@ -25,14 +15,47 @@ Would you like to write some code like this?
 </RemoteForm>
 ```
 
-or
+or even better:
 
 ```svelte
-let cat = {name: 'fuffy', age: 1 } 
+//person.svelte
+<script>
+let person = {name: 'yellowman', cats: []}
 
-const {state, flush, errors, update: updateMyCat} = useRemoteBind({id: 3, bind: 'endpoint:cat'})
+function addCat(cat){
+    person.cats = [...person.cats, cat]
+}
 
-$: updateMyCat(cat)
+const { update} = useRemoteBind({id: 1, bind: 'endpoint:person'})
+
+$: update(person)
+</script>
+
+<Cat added={addCat} />
+
+<div>
+    <span>Cats of yellow man:</span>
+    <ul>
+	{#each person.cats as cat}
+		<li>
+			{cat.name}
+		</li>
+	{/each}
+    </ul>
+</div>
+```
+
+```svelte
+// cat.svelte
+<script>
+export let added;
+
+let cat = {name: '', age: 1 } 
+
+const {state, flush, errors, update, reset} = useRemoteBind({added, bind: 'endpoint:cat'})
+
+$: update(cat)
+</script>
 
 <div>
     Name: <input type="text" bind:value={cat.name} />
@@ -40,6 +63,7 @@ $: updateMyCat(cat)
     {#if $state.value === 'debouncing'}
         <button on:click={flush}>Save!</button>
     {/if}
+    <button on:click={reset}>reset</button>
 </div>
 ```
 
@@ -82,6 +106,10 @@ Full example:
         name: "endpoint",
         baseUrl: "https://my-backend/api",
         entities: {
+            person: {
+                path: "/person", 
+                ...
+            },
             cat: {
                 path: "/cat", //default to ""
                 addQuery: ...,

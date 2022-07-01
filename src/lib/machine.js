@@ -1,7 +1,7 @@
 import { assign, createMachine, actions } from 'xstate';
-const { log, cancel, send } = actions;
+const { cancel, send } = actions;
 
-export const remoteMachineFactory = ({ id=null, schema, entity, validation, debounceTime=1000}) => {
+export const remoteMachineFactory = ({ added=()=>{}, id=null, schema, entity, validation, debounceTime=1000}) => {
 
     const myfetchv2 = schema.fetch
     const url = schema.baseUrl + schema.entities[entity].path
@@ -17,29 +17,21 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
       },
       states: {
         init: {
-          /*entry: log(
-            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'init'
-          ),*/
           on: {
             TYPE: 'idle'
           }
         },
         debouncing: {
           entry: [
-            //log(
-            //(context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            //'debouncing'
-          //),
-          cancel('debouncing'),
-          send("FETCH", {
-            delay: debounceTime,
-            id: "debouncing"
-          })
+              cancel('debouncing'),
+              send("FETCH", {
+                delay: debounceTime,
+                id: "debouncing"
+              })
             ],
           on: {
             FLUSH: {
-              actions: [cancel('debouncing'), log()] ,
+              actions: [cancel('debouncing')/*, log()*/] ,
               target: 'fetching'
             },
             FETCH: "fetching",
@@ -50,32 +42,28 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
           }
         },
         saved: {
-          /*entry: log(
-            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'saved'
-          ),*/
           always: "idle"
         },
         idle: {
-          /*entry: log(
-            (context, event) => `buffer.length: ${context.buffer.length} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'idle'
-          ),*/
           always: [
               { target: 'debouncing', cond: (context) => context.buffer.length > 0 }
           ],
           on: {
+            RESET: {
+              on: {
+                actions: assign({
+                  buffer: () => [],
+                  current: (context) => null,
+                })
+              }
+            },
             TYPE: {
-              target: "idle", //"debouncing",
+              target: "idle", 
               actions: "bufferIfValidItem"
             },
           },
         },
         error: {
-          /*entry: log(
-            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'error'
-          ),*/
           on: {
             TYPE: {
               target: "idle",
@@ -85,10 +73,6 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
         },
         fetching: {
           entry: [
-            /*log(
-              (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-              'fetching'
-            ),*/
             assign({
               buffer: () => [],
               current: (context) => context.buffer.at(-1),
@@ -112,8 +96,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
             onDone: {
               target: "saved",
               actions: [
-                //log((context, event ) => console.log('event.data onDone', event.data), 'onDone'),
-                assign({id: (context, event) => event.data.id})
+                assign({id: (context, event) => {
+                  if(context.id === null) added({...context.current, id: event.data.id})
+                  return event.data.id
+                }})
               ]
             },
             onError: "error"
@@ -125,7 +111,6 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
       actions: {
         bufferIfValidItem: assign({
           buffer: (context, event) => {
-            //console.log('buffer if valid item', event.data, validation(event.data))
             if(validation(event.data))
               return [...context.buffer, event.data]
             else

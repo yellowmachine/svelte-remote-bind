@@ -13,7 +13,8 @@
     
     const { validation, errors } = schema.entities[entity];
     const entitySchema = schema.entities[entity];
-    const m = remoteMachineFactory({id, schema, entity, validation, entitySchema, debounceTime});
+    const added = entitySchema.added;
+    const m = remoteMachineFactory({ added, id, schema, entity, validation, entitySchema, debounceTime});
     
     const { state, send } = useMachine(m);
     export let item;
@@ -23,5 +24,5 @@
 </script>
   
 <form>
-   <slot flush={() => send('FLUSH')} state={$state.value} errors={errors(item)} />
+   <slot reset={() => send('RESET')} flush={() => send('FLUSH')} state={$state.value} errors={errors(item)} />
 </form>

@@ -1,26 +1,9 @@
 <script>
     import "../app.css";
     import { setContext } from 'svelte';
+    import Person from '../components/person.svelte'
     
-    import { useRemoteBind } from '$lib';
-    import { create, test, enforce } from 'vest';
-
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-    const suite = create((data = {}) => {
-        test('name', 'Name is required', () => {
-            enforce(data.name).isNotBlank();
-        });
-
-        test('age', 'Age is required', () => {
-            enforce(data.age).isNotBlank();
-        });
-
-        test('age', 'Age is a number', () => {
-            enforce(data.age).isNumeric();
-        });
-
-    });
 
     let returnCode = 200;
     
@@ -32,21 +15,27 @@
         returnCode = 400;
     }
 
+let count = 1;
+
 let endpoint = {
         //default to fetch
-        fetch: async ({url, token, method, body}) => {
+        fetch: async ({url, body}) => {
             //mock fetch
             await sleep(2000)
+            console.log(`fetch called with body ${body} and url ${url}`)
             if(returnCode === 400)
                 throw "Error"
             else 
-                return {id: 1}
+                return {...body, id: count++}
         },
         debounceTime: 3000, //default to 1000
         token: async () => "Bearer ABC", //default to null
         name: "endpoint",
         baseUrl: "http://localhost:8080/api",
         entities: {
+            person: {
+                path: "/person"
+            },
             cat: {
                 path: "/cat", //default to ""
                 validation: (data) => suite(data).isValid(), //default to () => true
@@ -59,31 +48,13 @@ let endpoint = {
 setContext("remoteBindEndpoints", {
 	endpoint
 });
-
-let cat = {name: 'fuffy', age: 1 } 
-
-const {state, flush, errors, update: updateMyCat} = useRemoteBind({bind: 'endpoint:cat'})
-
-$: updateMyCat(cat)
-
 </script>
 
 <a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Link to repo</a>
 
 <div class="alert">(debounce time is 3 seconds)</div>
 
-<div>It's my cat ;)</div>
-
-<div>
-    Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
-    Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    <div class={`${$state.value}`}>Status: {$state.value}</div>
-    {#if $state.value === 'debouncing'}
-        <button class="btn btn-success" on:click={flush}>Save!</button>
-    {/if}
-    <p />
-    <div>Errors: {JSON.stringify(errors(cat).tests)}</div>
-</div>
+<Person />
 
 <div>
     <div class={returnCode === 200 ? 'success': 'failed'}>return code: {returnCode}</div>

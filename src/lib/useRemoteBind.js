@@ -10,13 +10,15 @@ export default function useRemoteBind({id=null, bind}){
 
     const { validation, errors } = schema.entities[entity];
     const entitySchema = schema.entities[entity];
-    const m = remoteMachineFactory({id, schema, entity, validation, entitySchema, debounceTime});
+    const added = entitySchema.added;
+    const m = remoteMachineFactory({ added, id, schema, entity, validation, entitySchema, debounceTime});
 
     const {state, send} = useMachine(m);
 
     return {
         state,
         errors,
+        reset: () => send('RESET'),
         flush: () => send('FLUSH'),
         update: (item) => send('TYPE', {data: item})
     }
