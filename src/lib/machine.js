@@ -1,5 +1,5 @@
 import { assign, createMachine, actions } from 'xstate';
-const { cancel, send } = actions;
+const { log, cancel, send } = actions;
 
 export const remoteMachineFactory = ({ onCreated=()=>{}, id=null, schema, entity, validation, debounceTime=1000}) => {
 
@@ -17,12 +17,14 @@ export const remoteMachineFactory = ({ onCreated=()=>{}, id=null, schema, entity
       },
       states: {
         init: {
+          entry: log(),
           on: {
             TYPE: 'idle'
           }
         },
         debouncing: {
           entry: [
+              log(),
               cancel('debouncing'),
               send("FETCH", {
                 delay: debounceTime,
@@ -45,17 +47,18 @@ export const remoteMachineFactory = ({ onCreated=()=>{}, id=null, schema, entity
           always: "idle"
         },
         idle: {
+          entry: log(),
           always: [
               { target: 'debouncing', cond: (context) => context.buffer.length > 0 }
           ],
           on: {
             RESET: {
-              on: {
-                actions: assign({
-                  buffer: () => [],
-                  current: (context) => null,
-                })
-              }
+              target: "idle",
+              actions: assign({
+                id: () => null,
+                buffer: () => [],
+                current: () => null,
+              })
             },
             TYPE: {
               target: "idle", 
@@ -64,6 +67,7 @@ export const remoteMachineFactory = ({ onCreated=()=>{}, id=null, schema, entity
           },
         },
         error: {
+          entry: log(),
           on: {
             TYPE: {
               target: "idle",
@@ -73,6 +77,7 @@ export const remoteMachineFactory = ({ onCreated=()=>{}, id=null, schema, entity
         },
         fetching: {
           entry: [
+            log(),
             assign({
               buffer: () => [],
               current: (context) => context.buffer.at(-1),

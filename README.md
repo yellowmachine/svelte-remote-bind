@@ -63,19 +63,19 @@ $: update(cat)
     {#if $state.value === 'debouncing'}
         <button on:click={flush}>Save!</button>
     {/if}
-    <button on:click={reset}>reset</button>
+    <button on:click={reset}>Reset</button>
 </div>
 ```
 
-
-Full example:
+The rest of the code would be:
 
 ```svelte
 <script lang="ts">
+    import Person from './person.svelte';
     import { setContext } from 'svelte';
-    import { RemoteForm} from 'svelte-remote-bind';
     import { create, test, enforce } from 'vest';
 
+    //vest for example for validation
     const suite = create((data = {}) => {
         test('name', 'Name is required', () => {
             enforce(data.name).isNotBlank();
@@ -123,21 +123,11 @@ Full example:
 
     setContext("remoteBindEndpoints", {
         endpoint
-    });
-
-    let cat = {name: 'fuffy', age: 1 } 
+    }); 
 
 </script>
 
-<div>It's my cat ;)</div>
-
-<!--id is optional, defaults to null -->
-<RemoteForm id={3} remoteBind="endpoint:cat" bind:item={cat} let:state let:errors let:flush>
-    Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
-    Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    <div>State: {state}</div>
-    <div>Errors: {JSON.stringify(errors.tests)}</div>
-</RemoteForm>
+<Person />
 ```
 
 Implementation: The actual implementation is with xstate.
