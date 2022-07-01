@@ -12,6 +12,12 @@
         reset()
     }
 
+    let colors = {
+        idle: 'gray',
+        fetching: 'orange',
+        error: 'red'
+    }
+
     $: update(cat)
 </script>
 
@@ -21,33 +27,6 @@
     {#if $state.value === 'debouncing'}
         <button class="btn btn-active btn-accent" on:click={flush}>Save!</button>
     {/if}
-    <div class={`$state.value`}>State of cat: {$state.value}</div>
-    <button class="btn btn-error" on:click={resetCat}>reset!</button>
+    <button class="btn btn-error" on:click={resetCat}>Reset!</button>
+    <div class={'text-' + colors[$state.value]}>State of cat: {$state.value}</div>
 </div>
-
-<style>
-    .success{
-        color: green;
-    }
-
-    .failed{
-        color: red;
-    }
-
-    .idle{
-        color: gray;
-    }
-
-    .fetching{
-        color: orange;
-    }
-
-    .error{
-        color: red;
-    }
-
-    .alert{
-        color: red;
-    }
-
-</style>

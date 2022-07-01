@@ -16,6 +16,7 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
         id,
         buffer: [],
         current: null,
+        latest: null,
       },
       states: {
         init: {
@@ -103,10 +104,13 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
             onDone: {
               target: "saved",
               actions: [
-                assign({id: (context, event) => {
-                  if(context.id === null) onCreated({...context.current, id: event.data.id})
-                  return event.data.id
-                }})
+                assign({
+                  id: (context, event) => {
+                    if(context.id === null) onCreated({...context.current, id: event.data.id})
+                    return event.data.id
+                  },
+                  latest: (context) => transform(context.current)
+                })
               ]
             },
             onError: "error"
@@ -118,7 +122,7 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
       actions: {
         bufferIfValidItem: assign({
           buffer: (context, event) => {
-            if(validation(event.data))
+            if(validation(event.data) && context.latest !== transform(event.data))
               return [...context.buffer, event.data]
             else
               return [...context.buffer]

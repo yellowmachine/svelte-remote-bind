@@ -6,7 +6,7 @@ This is a svelte-kit project, so to see the demo working: ```yarn dev```.
 
 The aim of this project is to bind an object to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: idle, debouncing, fetching, error and saved.
 
-You can even have related entities, like parent and child, and if a child is created, the array parent field is updated.
+You can even have related entities, like parent and child, and if a child is created, the array parent field is updated remotely. For example a person have an array of owned cats, and that person buys a new cat.
 
 ```svelte
 //person.svelte
@@ -22,6 +22,8 @@ const { update} = useRemoteBind({id: 1, bind: 'endpoint:person'})
 $: update(person)
 </script>
 
+<div>Buy a new cat</div>
+
 <Cat onCreated={addCat} />
 
 <div>
@@ -29,7 +31,7 @@ $: update(person)
     <ul>
 	{#each person.cats as cat}
 		<li>
-			{cat.name}
+			{cat.id}, {cat.name} (cat name is not updated because yellow man is only informed on created)
 		</li>
 	{/each}
     </ul>
@@ -136,6 +138,22 @@ This is an alternative:
 Implementation: The actual implementation is with xstate.
 
 ![state machine](./machine.png)
+
+TODO:
+
+I have the model on top of hierarchy of components:
+
+let person = {
+    name: 'yellowman', 
+    cats: [
+        {
+            name: 'fuffy',
+            age: 1
+        }
+    ]
+}
+
+pass to <ListCats model={person.cats} /> the cats array, and every change handled by useRemoteBind inside <Cat /> to be reflected on person. I don't want person to fetch on every change, so I need to have a field on machine state with the last data sent, compare and test if new data is equal or not to latest.
 
 To run tests:
 
