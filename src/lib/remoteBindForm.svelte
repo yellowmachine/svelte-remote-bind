@@ -2,6 +2,7 @@
     import { remoteMachineFactory } from './machine'
     import { useMachine } from '@xstate/svelte';
     import { getContext } from 'svelte';
+    //import cloneDeep from 'lodash.clonedeep';
 
     export let id = null;
     export let remoteBind;

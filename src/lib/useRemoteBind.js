@@ -1,6 +1,7 @@
 import { remoteMachineFactory } from './machine'
 import { useMachine } from '@xstate/svelte';
 import { getContext } from 'svelte';
+import cloneDeep from 'lodash.clonedeep';
 
 export default function useRemoteBind({id=null, bind, onCreated}){
     const endpoints = getContext('remoteBindEndpoints')
@@ -23,7 +24,7 @@ export default function useRemoteBind({id=null, bind, onCreated}){
         errors,
         reset: () => send('RESET'),
         flush: () => send('FLUSH'),
-        update: (item) => send('TYPE', {data: item})
+        update: (item) => send('TYPE', {data: cloneDeep(item)})
     }
 }
 

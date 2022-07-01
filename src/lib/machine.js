@@ -24,7 +24,10 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
         init: {
           entry: log(),
           on: {
-            TYPE: 'idle'
+            TYPE: {
+              target: 'idle',
+              actions: assign({latest: (context, event) => event.data})
+            }
           }
         },
         debouncing: {
