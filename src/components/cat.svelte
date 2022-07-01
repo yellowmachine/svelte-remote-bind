@@ -21,7 +21,7 @@
     {#if $state.value === 'debouncing'}
         <button class="btn btn-active btn-accent" on:click={flush}>Save!</button>
     {/if}
-    <div>State of cat: {$state.value}</div>
+    <div class={`$state.value`}>State of cat: {$state.value}</div>
     <button class="btn btn-error" on:click={resetCat}>reset!</button>
 </div>
 

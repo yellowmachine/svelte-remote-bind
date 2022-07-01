@@ -10,11 +10,15 @@
     const [name, entity] = remoteBind.split(':');
     const schema = endpoints[name]
     const debounceTime = schema.debounceTime;
-    
-    const { validation, errors } = schema.entities[entity];
+
     const entitySchema = schema.entities[entity];
+
+    const validation = entitySchema.validation || (() => true);
+    const errors = entitySchema.errors || (() => ({}))
+    const transform = entitySchema.transform || ( x => x)
+    
     const onCreated = entitySchema.onCreated;
-    const m = remoteMachineFactory({ onCreated, id, schema, entity, validation, entitySchema, debounceTime});
+    const m = remoteMachineFactory({ transform, onCreated, id, schema, entity, validation, entitySchema, debounceTime});
     
     const { state, send } = useMachine(m);
     export let item;

@@ -4,18 +4,9 @@ This is a svelte-kit project, so to see the demo working: ```yarn dev```.
 
 [Demo](https://svelte-remote-bind.surge.sh)
 
-The aim of this project is to bind a form to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: idle, debouncing, fetching, error and saved.
+The aim of this project is to bind an object to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: idle, debouncing, fetching, error and saved.
 
-Would you like to write some code like this?
-
-```svelte
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors>
-    Name: <input type="text" bind:value={cat.name} />
-    Age: <input type="number" bind:value={cat.age} />
-</RemoteForm>
-```
-
-or even better:
+You can even have related entities, like parent and child, and if a child is created, the array parent field is updated.
 
 ```svelte
 //person.svelte
@@ -108,6 +99,9 @@ The rest of the code would be:
         entities: {
             person: {
                 path: "/person", 
+                transform: (data) => {
+                    return {...data, cats: data.cats.map(x=>x.id)}
+                }
                 ...
             },
             cat: {
@@ -128,6 +122,15 @@ The rest of the code would be:
 </script>
 
 <Person />
+```
+
+This is an alternative:
+
+```svelte
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors>
+    Name: <input type="text" bind:value={cat.name} />
+    Age: <input type="number" bind:value={cat.age} />
+</RemoteForm>
 ```
 
 Implementation: The actual implementation is with xstate.

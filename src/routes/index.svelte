@@ -40,6 +40,7 @@
         //default to fetch
         fetch: async ({url, token, method, body}) => {
             //mock fetch
+            console.log('fetch is called with:', url, token, method, body)
             await sleep(2000)
             if(returnCode === 400)
                 throw "Error"
@@ -49,10 +50,13 @@
         debounceTime: 1000, //default to 1000
         token: async () => "Bearer ABC", //default to null
         name: "endpoint",
-        baseUrl: "http://localhost:8080/api",
+        baseUrl: "http://my-backend/api",
         entities: {
             person: {
-                path: "/person"
+                path: "/person",
+                transform: (data) => {
+                    return {...data, cats: data.cats.map(x=>x.id)}
+                }
             },
             cat: {
                 path: "/cat", //default to ""
@@ -71,7 +75,6 @@
     let person = {name: 'yellowman', cats: []}
 
     function addCat(cat){
-        console.log('*** add cat called')
         person.cats.push(cat)
         person = person
     }
@@ -81,22 +84,26 @@
     $: update(person)
 </script>
 
-<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Link to repo</a>
+<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Github repo</a>
 
 <p/>
 
+<span>Create a cat:</span>
+
 <Cat onCreated={addCat} />
 
+<hr />
+
 <div>
-    <span>Id cats of yellow man:</span>
+    <span>Cats of yellow man:</span>
     <ul>
 	{#each person.cats as cat}
 		<li>
-			Id: {cat.id}
+			{cat.name}
 		</li>
 	{/each}
     </ul>
-    <div>State of Person: {$state.value}</div>
+    <div class={`$state.value`}>State of Yellow Man: {$state.value}</div>
 </div>
 
 <div>
@@ -104,7 +111,6 @@
     <button class="btn btn-error" on:click={setError}>I want server to return error</button>
     <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
 </div>
-
 
 <style>
     .success{

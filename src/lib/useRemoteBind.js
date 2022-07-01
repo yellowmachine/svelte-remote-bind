@@ -12,8 +12,9 @@ export default function useRemoteBind({id=null, bind, onCreated}){
 
     const validation = entitySchema.validation || (() => true);
     const errors = entitySchema.errors || (() => ({}))
+    const transform = entitySchema.transform || ( x => x)
     
-    const m = remoteMachineFactory({ onCreated, id, schema, entity, validation, entitySchema, debounceTime});
+    const m = remoteMachineFactory({ transform, onCreated, id, schema, entity, validation, entitySchema, debounceTime});
 
     const {state, send} = useMachine(m);
 
