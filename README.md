@@ -139,22 +139,6 @@ Implementation: The actual implementation is with xstate.
 
 ![state machine](./machine.png)
 
-TODO:
-
-I have the model on top of hierarchy of components:
-
-let person = {
-    name: 'yellowman', 
-    cats: [
-        {
-            name: 'fuffy',
-            age: 1
-        }
-    ]
-}
-
-pass to <ListCats model={person.cats} /> the cats array, and every change handled by useRemoteBind inside <Cat /> to be reflected on person cats, so there's only one source of truth.
-
 To run tests:
 
 ```bash
