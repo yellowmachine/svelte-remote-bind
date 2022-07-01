@@ -126,7 +126,7 @@ The rest of the code would be:
 <Person />
 ```
 
-This is an alternative:
+This is an alternative (not recommended and maybe will not exist on production ready package):
 
 ```svelte
 <RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors>
@@ -153,7 +153,7 @@ let person = {
     ]
 }
 
-pass to <ListCats model={person.cats} /> the cats array, and every change handled by useRemoteBind inside <Cat /> to be reflected on person. I don't want person to fetch on every change, so I need to have a field on machine state with the last data sent, compare and test if new data is equal or not to latest.
+pass to <ListCats model={person.cats} /> the cats array, and every change handled by useRemoteBind inside <Cat /> to be reflected on person cats, so there's only one source of truth.
 
 To run tests:
 
