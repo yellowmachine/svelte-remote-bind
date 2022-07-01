@@ -1,4 +1,6 @@
 import { assign, createMachine, actions } from 'xstate';
+import equal from 'deep-equal';
+
 const { log, cancel, send } = actions;
 
 export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{}, 
@@ -16,7 +18,7 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
         id,
         buffer: [],
         current: null,
-        latest: null,
+        latest: {},
       },
       states: {
         init: {
@@ -59,6 +61,7 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
               target: "idle",
               actions: assign({
                 id: () => null,
+                latest: () => ({}),
                 buffer: () => [],
                 current: () => null,
               })
@@ -94,13 +97,19 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
             },
           },
           invoke: {
-            src: async (context, event) => await myfetchv2({
-              url: context.id !== null ? url + '/' + context.id : url,
-              id: context.id,
-              token: await token(), 
-              method: context.id !== null ? 'PUT': 'POST', 
-              body: transform(context.current)
-            }),
+            src: async (context, event) => {
+              if(!equal(context.latest, transform(event.data))){
+                return await myfetchv2({
+                  url: context.id !== null ? url + '/' + context.id : url,
+                  id: context.id,
+                  token: await token(), 
+                  method: context.id !== null ? 'PUT': 'POST', 
+                  body: transform(context.current)
+                })
+              }else{
+                return {data: {id: context.id}}
+              }
+            },
             onDone: {
               target: "saved",
               actions: [
@@ -122,10 +131,10 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
       actions: {
         bufferIfValidItem: assign({
           buffer: (context, event) => {
-            if(validation(event.data) && context.latest !== transform(event.data))
+            if(validation(event.data))
               return [...context.buffer, event.data]
             else
-              return [...context.buffer]
+              return context.buffer
           }
         })
       }
