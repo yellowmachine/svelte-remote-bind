@@ -122,7 +122,6 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
                     return event.data.id
                   },
                   latest: (context) => {
-                    console.log('latest context.current', context.current)
                     return transform(context.current)
                   }
                 })

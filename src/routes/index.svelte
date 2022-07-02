@@ -54,10 +54,7 @@
         entities: {
             person: {
                 path: "/person",
-                transform: (data) => {
-                    console.log('data on person transform', data)
-                    return {...data, cats: data.cats.map(x=>x.id)}
-                }
+                transform: (data) => ({...data, cats: data.cats.map(x=>x.id)}) 
             },
             cat: {
                 path: "/cat", //default to ""
@@ -71,10 +68,11 @@
     setContext("remoteBindEndpoints", {
         endpoint
     });
-
+    
     let colors = {
         idle: 'gray',
-        fetching: 'orange',
+        debouncing: 'yellow',
+        fetching: 'blue',
         error: 'red'
     }
 
@@ -88,32 +86,36 @@
     const { state, update} = useRemoteBind({id: 1, bind: 'endpoint:person'})
 
     $: update(person)
+    $: stateColor = `text-[color:${colors[$state.value]}]`
+
 </script>
 
-<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Github repo</a>
+<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Github repo of svelte-remote-bind</a>
 
-<div class="flex h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
-    <div class="m-auto">
-        <div>
+<div class="flex h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+    <div class="m-auto w-1/2">
+        <div class="text-white">
             <span>Cats of yellow man:</span>
+            {#if person.cats.length > 0}
+            <span class="text-[color:pink]">(cat name is not updated because yellow man is only informed on created. See TODO on documentation.)</span>
+            {/if}
             <ul>
             {#each person.cats as cat}
                 <li>
                     {cat.id}, {cat.name} 
-                    (cat name is not updated because yellow man is only informed on created. See TODO on documentation.
-                    )
                 </li>
             {/each}
             </ul>
         </div>
-        <div>Buy a new cat</div>
+        <p />
+        <div class="text-white">Buy a new cat</div>
         <Cat onCreated={addCat} />
-        <div class={'text-' + colors[$state.value]}>State of Yellow Man: {$state.value}</div>
+        <div class={stateColor}>State of Yellow Man: {$state.value}</div>
         
-        <div>
-            <button class="btn btn-error" on:click={setError}>I want server to return error</button>
+        <div class="mt-3">
+            <button class="btn btn-error mb-2" on:click={setError}>I want server to return error</button>
             <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
-            <div class={returnCode === 200 ? 'text-green': 'text-red'}>return code: {returnCode}</div>
+            <div class={returnCode === 200 ? 'text-[color:green]': 'text-[color:pink]'}>return code: {returnCode}</div>
         </div>
     </div>
 </div>
