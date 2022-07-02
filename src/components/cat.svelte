@@ -15,7 +15,7 @@
     let colors = {
         idle: 'gray',
         debouncing: 'yellow',
-        fetching: 'blue',
+        saving: 'blue',
         error: 'red'
     }
 
@@ -24,8 +24,8 @@
     $: update(cat)
     $: stateColor = `text-[color:${colors[$state.value]}]`
     $: {
-        let err = errors()
-        formErrors = [].concat(err.name, err.age)
+        let {name, age} = errors(cat)
+        formErrors = [].concat(name || [], age || [])
     }
 
 </script>

@@ -57,7 +57,7 @@ it('should reach idle from init on TYPE and debounce', (done) => {
           token: 'Bearer ABC',
           body: 'xyz'
         });
-        expect(states).toEqual(['init', 'idle', 'debouncing', 'debouncing', 'fetching', 'idle'])
+        expect(states).toEqual(['init', 'idle', 'debouncing', 'debouncing', 'saving', 'idle'])
         done()
       }
     })
@@ -83,7 +83,7 @@ it('should reach error from init', (done) => {
       states.push(state.value)
       count++
       if(state.matches("error")) {
-        expect(states).toEqual(['init', 'idle', 'debouncing', 'fetching', 'error'])
+        expect(states).toEqual(['init', 'idle', 'debouncing', 'saving', 'error'])
         done()
       }
     })
