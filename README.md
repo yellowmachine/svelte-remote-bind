@@ -85,7 +85,6 @@ The rest of the code would be:
     });
 
     let endpoint = {
-        //default to fetch
         fetch: async ({id, url, headers, method, body, entitySchema}) => {
             //entitySchema is useful when doing a GraphQL query 
             //example:
@@ -111,7 +110,7 @@ The rest of the code would be:
                 addQuery: ...,
                 updateQuery: ...,
                 validation: (data) => suite(data).isValid(), //default to () => true
-                errors: (data) => suite(data), //default to () => ({})
+                errors: (data) => suite(data).getErrors(), //default to () => ({})
                 key: (data) => data.cat.id //default to "id"
             }
         }
@@ -135,9 +134,11 @@ This is an alternative (not recommended and maybe will not exist on production r
 </RemoteForm>
 ```
 
-Implementation: The actual implementation is with xstate.
+Implementation: The actual implementation is with [xstate](https://xstate.js.org/).
 
-![state machine](./machine.png)
+[Link to state machine](https://stately.ai/viz/f439b6a7-9ede-4efc-96f7-6f34acc4261f)
+
+The example uses [vest](https://vestjs.dev/) to validate forms.
 
 TODO:
 
@@ -145,6 +146,7 @@ a demo with a model (one source of truth) like
 
 ```js
 let person = {
+    id: 9,
     name: 'yellow man',
     cats: [{name: 'fuffy', age: 1}]
 }
