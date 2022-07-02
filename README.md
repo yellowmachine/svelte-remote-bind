@@ -136,7 +136,7 @@ This is an alternative (not recommended and maybe will not exist on production r
 
 Implementation: The actual implementation is with [xstate](https://xstate.js.org/).
 
-![state machine](./machine.png)
+[Link to state machine](https://stately.ai/viz/f439b6a7-9ede-4efc-96f7-6f34acc4261f)
 
 The example uses [vest](https://vestjs.dev/) to validate forms.
 
