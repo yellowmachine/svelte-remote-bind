@@ -59,7 +59,7 @@
             cat: {
                 path: "/cat", //default to ""
                 validation: (data) => suite(data).isValid(), //default to () => true
-                errors: (data) => suite(data).getErrors(), //default to () => ({})
+                errors: (data) => suite(data), //default to () => ({})
                 key: "id" //default to "id", it can be a function like (data) => data['cat']['id']
             }
         }
