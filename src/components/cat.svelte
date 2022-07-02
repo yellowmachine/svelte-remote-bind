@@ -19,6 +19,8 @@
         error: 'red'
     }
 
+    let formErrors = []
+
     $: update(cat)
     $: stateColor = `text-[color:${colors[$state.value]}]`
     $: {
