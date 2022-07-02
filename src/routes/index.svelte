@@ -2,7 +2,9 @@
     import "../app.css";
     import { setContext } from 'svelte';
     
-    import { RemoteForm} from '$lib';
+    import { useRemoteBind } from '$lib';
+    import Cat from '../components/cat.svelte'
+
     import { create, test, enforce } from 'vest';
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -32,21 +34,28 @@
         returnCode = 400;
     }
 
-let endpoint = {
+    let count = 1;
+
+    let endpoint = {
         //default to fetch
         fetch: async ({url, token, method, body}) => {
             //mock fetch
+            console.log('fetch is called with:', url, token, method, body)
             await sleep(2000)
             if(returnCode === 400)
                 throw "Error"
             else 
-                return {id: 1}
+                return {id: count++}
         },
         debounceTime: 1000, //default to 1000
         token: async () => "Bearer ABC", //default to null
         name: "endpoint",
-        baseUrl: "http://localhost:8080/api",
+        baseUrl: "http://my-backend/api",
         entities: {
+            person: {
+                path: "/person",
+                transform: (data) => ({...data, cats: data.cats.map(x=>x.id)}) 
+            },
             cat: {
                 path: "/cat", //default to ""
                 validation: (data) => suite(data).isValid(), //default to () => true
@@ -56,56 +65,57 @@ let endpoint = {
         }
     }
 
-setContext("remoteBindEndpoints", {
-	endpoint
-});
+    setContext("remoteBindEndpoints", {
+        endpoint
+    });
+    
+    let colors = {
+        idle: 'gray',
+        debouncing: 'yellow',
+        fetching: 'blue',
+        error: 'red'
+    }
 
-let cat = {name: 'fuffy', age: 1 } 
+    let person = {name: 'yellowman', cats: []}
+
+    function addCat(cat){
+        person.cats.push(cat)
+        person = person
+    }
+
+    const { state, update} = useRemoteBind({id: 1, bind: 'endpoint:person'})
+
+    $: update(person)
+    $: stateColor = `text-[color:${colors[$state.value]}]`
 
 </script>
 
-<a class="link" href="/useremotebind">Go to useRemoteBind page</a>
+<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Github repo of svelte-remote-bind</a>
 
-<p/>
-
-<a class="link" href="https://github.com/yellowmachine/svelte-remote-bind">Link to repo</a>
-
-<p/>
-
-<div>It's my cat ;)</div>
-
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors>
-    Name: <input class="input input-bordered w-full max-w-xs" type="text" bind:value={cat.name} />
-    Age: <input class="input input-bordered w-full max-w-xs" type="number" bind:value={cat.age} />
-    <div class={`${state}`}>Status: {state}</div>
-    <div>Errors: {JSON.stringify(errors.tests)}</div>
-</RemoteForm>
-
-<div>
-    <div class={returnCode === 200 ? 'success': 'failed'}>return code: {returnCode}</div>
-    <button class="btn btn-error" on:click={setError}>I want server to return error</button>
-    <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
+<div class="flex h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+    <div class="m-auto w-1/2">
+        <div class="text-white">
+            <span>Cats of yellow man:</span>
+            {#if person.cats.length > 0}
+            <span class="text-[color:pink]">(cat name is not updated because yellow man is only informed on created. See TODO on documentation.)</span>
+            {/if}
+            <ul>
+            {#each person.cats as cat}
+                <li>
+                    {cat.id}, {cat.name} 
+                </li>
+            {/each}
+            </ul>
+        </div>
+        <p />
+        <div class="text-white">Buy a new cat</div>
+        <Cat onCreated={addCat} />
+        <div class={stateColor}>State of Yellow Man: {$state.value}</div>
+        
+        <div class="mt-3">
+            <button class="btn btn-error mb-2" on:click={setError}>I want server to return error</button>
+            <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
+            <div class={returnCode === 200 ? 'text-[color:green]': 'text-[color:pink]'}>return code: {returnCode}</div>
+        </div>
+    </div>
 </div>
-
-<style>
-    .success{
-        color: green;
-    }
-
-    .failed{
-        color: red;
-    }
-
-    .idle{
-        color: gray;
-    }
-
-    .fetching{
-        color: orange;
-    }
-
-    .error{
-        color: red;
-    }
-
-</style>

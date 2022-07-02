@@ -1,7 +1,11 @@
 import { assign, createMachine, actions } from 'xstate';
+import equal from 'deep-equal';
+
 const { log, cancel, send } = actions;
 
-export const remoteMachineFactory = ({ id=null, schema, entity, validation, debounceTime=1000}) => {
+export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{}, 
+                                       id=null, schema, entity, validation, 
+                                       debounceTime=1000}) => {
 
     const myfetchv2 = schema.fetch
     const url = schema.baseUrl + schema.entities[entity].path
@@ -14,32 +18,30 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
         id,
         buffer: [],
         current: null,
+        latest: {},
       },
       states: {
         init: {
-          /*entry: log(
-            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'init'
-          ),*/
+          entry: log(),
           on: {
-            TYPE: 'idle'
+            TYPE: {
+              target: 'idle',
+              actions: assign({latest: (context, event) => event.data})
+            }
           }
         },
         debouncing: {
           entry: [
-            //log(
-            //(context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            //'debouncing'
-          //),
-          cancel('debouncing'),
-          send("FETCH", {
-            delay: debounceTime,
-            id: "debouncing"
-          })
+              log(),
+              cancel('debouncing'),
+              send("FETCH", {
+                delay: debounceTime,
+                id: "debouncing"
+              })
             ],
           on: {
             FLUSH: {
-              actions: [cancel('debouncing'), log()] ,
+              actions: [cancel('debouncing')/*, log()*/] ,
               target: 'fetching'
             },
             FETCH: "fetching",
@@ -50,32 +52,31 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
           }
         },
         saved: {
-          /*entry: log(
-            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'saved'
-          ),*/
           always: "idle"
         },
         idle: {
-          /*entry: log(
-            (context, event) => `buffer.length: ${context.buffer.length} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'idle'
-          ),*/
+          entry: log(),
           always: [
               { target: 'debouncing', cond: (context) => context.buffer.length > 0 }
           ],
           on: {
+            RESET: {
+              target: "idle",
+              actions: assign({
+                id: () => null,
+                latest: () => ({}),
+                buffer: () => [],
+                current: () => null,
+              })
+            },
             TYPE: {
-              target: "idle", //"debouncing",
+              target: "idle", 
               actions: "bufferIfValidItem"
             },
           },
         },
         error: {
-          /*entry: log(
-            (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-            'error'
-          ),*/
+          entry: log(),
           on: {
             TYPE: {
               target: "idle",
@@ -85,10 +86,7 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
         },
         fetching: {
           entry: [
-            /*log(
-              (context, event) => `buffer: ${context.buffer} current: ${context.current}, event: ${JSON.stringify(event)}`,
-              'fetching'
-            ),*/
+            log(),
             assign({
               buffer: () => [],
               current: (context) => context.buffer.at(-1),
@@ -102,18 +100,31 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
             },
           },
           invoke: {
-            src: async (context, event) => await myfetchv2({
-              url: context.id !== null ? url + '/' + context.id : url,
-              id: context.id,
-              token: await token(), 
-              method: context.id !== null ? 'PUT': 'POST', 
-              body: context.current
-            }),
+            src: async (context, event) => {
+              if(!equal(context.latest, transform(context.current))){  
+                return await myfetchv2({
+                  url: context.id !== null ? url + '/' + context.id : url,
+                  id: context.id,
+                  token: await token(), 
+                  method: context.id !== null ? 'PUT': 'POST', 
+                  body: transform(context.current)
+                })
+              }else{
+                return {data: {id: context.id}}
+              }
+            },
             onDone: {
               target: "saved",
               actions: [
-                //log((context, event ) => console.log('event.data onDone', event.data), 'onDone'),
-                assign({id: (context, event) => event.data.id})
+                assign({
+                  id: (context, event) => {
+                    if(context.id === null) onCreated({...context.current, id: event.data.id})
+                    return event.data.id
+                  },
+                  latest: (context) => {
+                    return transform(context.current)
+                  }
+                })
               ]
             },
             onError: "error"
@@ -125,11 +136,10 @@ export const remoteMachineFactory = ({ id=null, schema, entity, validation, debo
       actions: {
         bufferIfValidItem: assign({
           buffer: (context, event) => {
-            //console.log('buffer if valid item', event.data, validation(event.data))
             if(validation(event.data))
               return [...context.buffer, event.data]
             else
-              return [...context.buffer]
+              return context.buffer
           }
         })
       }
