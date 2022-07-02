@@ -24,9 +24,8 @@
     $: update(cat)
     $: stateColor = `text-[color:${colors[$state.value]}]`
     $: {
-        let err = errors(cat).getErrors()
-        console.log('***', err)
-        formErrors = [].concat(err.name || [], err.age || [])
+        let {name, age} = errors(cat)
+        formErrors = [].concat(name || [], age || [])
     }
 
 </script>
