@@ -42,9 +42,9 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
           on: {
             FLUSH: {
               actions: [cancel('debouncing')/*, log()*/] ,
-              target: 'fetching'
+              target: 'saving'
             },
-            FETCH: "fetching",
+            FETCH: "saving",
             TYPE: {
               actions: "bufferIfValidItem",
               target: "debouncing" 
@@ -84,7 +84,7 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
             },
           },
         },
-        fetching: {
+        saving: {
           entry: [
             log(),
             assign({
@@ -95,7 +95,7 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
           on: {
             TYPE: {
               internal: true,
-              target: "fetching",
+              target: "saving",
               actions: "bufferIfValidItem"
             },
           },

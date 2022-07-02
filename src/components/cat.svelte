@@ -15,7 +15,7 @@
     let colors = {
         idle: 'gray',
         debouncing: 'yellow',
-        fetching: 'blue',
+        saving: 'blue',
         error: 'red'
     }
 

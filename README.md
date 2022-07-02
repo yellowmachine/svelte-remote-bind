@@ -4,7 +4,7 @@ This is a svelte-kit project, so to see the demo working: ```yarn dev```.
 
 [Demo](https://svelte-remote-bind.surge.sh)
 
-The aim of this project is to bind an object to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: idle, debouncing, fetching, error and saved.
+The aim of this project is to bind an object to a remote endpoint so a POST or PUT is done automatically while typing. There's a state machine with states: idle, debouncing, saving, error and saved.
 
 You can even have related entities, like parent and child, and if a child is created, the array parent field is updated remotely. For example a person have an array of owned cats, and that person buys a new cat.
 
