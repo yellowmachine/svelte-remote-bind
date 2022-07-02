@@ -31,7 +31,7 @@ $: update(person)
     <ul>
 	{#each person.cats as cat}
 		<li>
-			{cat.id}, {cat.name} (cat name is not updated because yellow man is only informed on created)
+			{cat.id}, {cat.name}
 		</li>
 	{/each}
     </ul>
@@ -128,7 +128,7 @@ The rest of the code would be:
 This is an alternative (not recommended and maybe will not exist on production ready package):
 
 ```svelte
-<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors>
+<RemoteForm remoteBind="endpoint:cat" bind:item={cat} let:state let:errors let:flush >
     Name: <input type="text" bind:value={cat.name} />
     Age: <input type="number" bind:value={cat.age} />
 </RemoteForm>
@@ -150,8 +150,9 @@ let person = {
     name: 'yellow man',
     cats: [{name: 'fuffy', age: 1}]
 }
+```
 
-and the svelte files 'person.svelte', 'catList.svelte' and 'cat.svelte'. If you add or remove a cat, person triggers automatically a save, but no when you change the name of cat. 
+and the svelte files *person.svelte*, *catList.svelte* and *cat.svelte*. If you add or remove a cat, person triggers automatically a save, but not when you change the name of an owned cat. 
 
 There's no need to add extra functionality to the package to do that demo. The key is to have:
 
@@ -167,7 +168,7 @@ function onCreatedCat(cat){
     person = person
 }
 ...
-//so you guess there's a need to unsifht a cat clicking a button for example inside catList
+//so you guess there's a need to unsifht a cat clicking on a button for example inside catList
 ```
 
 To run tests:
