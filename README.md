@@ -139,6 +139,35 @@ Implementation: The actual implementation is with xstate.
 
 ![state machine](./machine.png)
 
+TODO:
+
+a demo with a model (one source of truth) like 
+
+```js
+let person = {
+    name: 'yellow man',
+    cats: [{name: 'fuffy', age: 1}]
+}
+
+and the svelte files 'person.svelte', 'catList.svelte' and 'cat.svelte'. If you add or remove a cat, person triggers automatically a save, but no when you change the name of cat. 
+
+There's no need to add extra functionality to the package to do that demo. The key is to have:
+
+```js
+transform: (data) => {
+    return {...data, cats: data.cats.map(x => x.id).filter(x => x !== undefined)}
+}
+...
+
+function onCreatedCat(cat){
+    //update the cat in the array without id
+    person.cats[0].id = cat.id
+    person = person
+}
+...
+//so you guess there's a need to unsifht a cat clicking a button for example inside catList
+```
+
 To run tests:
 
 ```bash

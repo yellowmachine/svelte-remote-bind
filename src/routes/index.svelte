@@ -55,6 +55,7 @@
             person: {
                 path: "/person",
                 transform: (data) => {
+                    console.log('data on person transform', data)
                     return {...data, cats: data.cats.map(x=>x.id)}
                 }
             },
@@ -93,29 +94,26 @@
 
 <div class="flex h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
     <div class="m-auto">
-        <div>Buy a new cat</div>
-
-        <Cat onCreated={addCat} />
-        
         <div>
             <span>Cats of yellow man:</span>
             <ul>
             {#each person.cats as cat}
                 <li>
                     {cat.id}, {cat.name} 
-                    (cat name is not updated because yellow man is only informed on created.
-                     this is intended because the PUT only needs to be done on created and removed cat from array.
+                    (cat name is not updated because yellow man is only informed on created. See TODO on documentation.
                     )
                 </li>
             {/each}
             </ul>
-            <div class={'text-' + colors[$state.value]}>State of Yellow Man: {$state.value}</div>
         </div>
+        <div>Buy a new cat</div>
+        <Cat onCreated={addCat} />
+        <div class={'text-' + colors[$state.value]}>State of Yellow Man: {$state.value}</div>
         
         <div>
-            <div class={returnCode === 200 ? 'text-green': 'text-red'}>return code: {returnCode}</div>
             <button class="btn btn-error" on:click={setError}>I want server to return error</button>
             <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
+            <div class={returnCode === 200 ? 'text-green': 'text-red'}>return code: {returnCode}</div>
         </div>
     </div>
 </div>

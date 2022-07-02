@@ -22,8 +22,8 @@
 </script>
 
 <div>
-    Name: <input type="text" bind:value={cat.name} />
-    Age: <input type="number" bind:value={cat.age} />
+    Name: <input class="text-black" type="text" bind:value={cat.name} />
+    Age: <input class="text-black" type="number" bind:value={cat.age} />
     {#if $state.value === 'debouncing'}
         <button class="btn btn-active btn-accent" on:click={flush}>Save!</button>
     {/if}

@@ -101,7 +101,7 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
           },
           invoke: {
             src: async (context, event) => {
-              if(!equal(context.latest, transform(event.data))){
+              if(!equal(context.latest, transform(context.current))){  
                 return await myfetchv2({
                   url: context.id !== null ? url + '/' + context.id : url,
                   id: context.id,
@@ -121,7 +121,10 @@ export const remoteMachineFactory = ({ transform=(x) => x, onCreated=()=>{},
                     if(context.id === null) onCreated({...context.current, id: event.data.id})
                     return event.data.id
                   },
-                  latest: (context) => transform(context.current)
+                  latest: (context) => {
+                    console.log('latest context.current', context.current)
+                    return transform(context.current)
+                  }
                 })
               ]
             },
