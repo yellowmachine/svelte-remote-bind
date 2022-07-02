@@ -5,7 +5,7 @@
 
     let cat = {name: '', age: '' } 
 
-    const {state, flush, update, reset} = useRemoteBind({onCreated, bind: 'endpoint:cat'})
+    const {state, errors, flush, update, reset} = useRemoteBind({onCreated, bind: 'endpoint:cat'})
 
     function resetCat(){
         cat = {name: '', age: '' }
@@ -21,6 +21,10 @@
 
     $: update(cat)
     $: stateColor = `text-[color:${colors[$state.value]}]`
+    $: {
+        let err = errors()
+        formErrors = [].concat(err.name, err.age)
+    }
 
 </script>
 
@@ -31,6 +35,13 @@
     <div class="mt-3 mb-3">
         <input placeholder="Age" type="number" bind:value={cat.age} />
     </div>
+    <ul class="ml-10 mb-3 text-[color:pink]">
+        {#each formErrors as err}
+            <li>
+                {err}
+            </li>
+        {/each}
+    </ul>
     <div>
         {#if $state.value === 'debouncing'}
             <button class="btn btn-active btn-accent" on:click={flush}>Save!</button>

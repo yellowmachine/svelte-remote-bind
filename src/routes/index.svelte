@@ -59,7 +59,7 @@
             cat: {
                 path: "/cat", //default to ""
                 validation: (data) => suite(data).isValid(), //default to () => true
-                errors: (data) => suite(data), //default to () => ({})
+                errors: (data) => suite(data).getErrors(), //default to () => ({})
                 key: "id" //default to "id", it can be a function like (data) => data['cat']['id']
             }
         }
@@ -113,8 +113,12 @@
         <div class={stateColor}>State of Yellow Man: {$state.value}</div>
         
         <div class="mt-3">
-            <button class="btn btn-error mb-2" on:click={setError}>I want server to return error</button>
-            <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
+            <div>
+                <button class="btn btn-error mb-2" on:click={setError}>I want server to return error</button>
+            </div>
+            <div>
+                <button class="btn btn-success" on:click={setOk}>I want server to return success</button>    
+            </div>
             <div class={returnCode === 200 ? 'text-[color:green]': 'text-[color:pink]'}>return code: {returnCode}</div>
         </div>
     </div>
